@@ -11,29 +11,29 @@ type ListItem struct {
 	Desc  string
 }
 
-type model struct {
+type ListViewModel struct {
 	title    string
 	choices  []ListItem
 	cursor   int
 	endValue *string
 }
 
-func ListView(t string, li []ListItem, v *string) model {
+func ListView(t string, li []ListItem, v *string) ListViewModel {
 	tl := t + "\n"
 
-	return model{
+	return ListViewModel{
 		title:    tl,
 		choices:  li,
 		endValue: v,
 	}
 }
 
-func (m model) Init() tea.Cmd {
+func (m ListViewModel) Init() tea.Cmd {
 	// Just return `nil`, which means "no I/O right now, please."
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	// Is it a key press?
@@ -64,12 +64,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	// Return the updated model to the Bubble Tea runtime for processing.
+	// Return the updated ListViewModel to the Bubble Tea runtime for processing.
 	// Note that we're not returning a command.
 	return m, nil
 }
 
-func (m model) View() string {
+func (m ListViewModel) View() string {
 
 	// Iterate over our choices
 	for i, choice := range m.choices {

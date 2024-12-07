@@ -135,8 +135,15 @@ func main() {
 		} else if answer == "custom" {
 
 			// Show text input to write scope string.
-			os.Exit(0)
+			scopeAnswer := ""
 
+			p := tea.NewProgram(src.TextInputView("Write a name for the scope", "", &scopeAnswer))
+			if _, err := p.Run(); err != nil {
+				fmt.Printf("there's been an error: %v", err)
+				os.Exit(1)
+			}
+
+			branchData.Scope = scopeAnswer
 		} else {
 			// This case should not happen.
 			os.Exit(0)
@@ -156,4 +163,24 @@ func main() {
 	}
 
 	// Write commit message
+
+	commitDescription := ""
+
+	a := tea.NewProgram(src.TextInputView("Write the commit message", "", &commitDescription))
+	if _, err := a.Run(); err != nil {
+		fmt.Printf("there's been an error: %v", err)
+		os.Exit(1)
+	}
+
+	commitMsg := fmt.Sprintf(
+		"%s(%s): %s",
+		selectCommitType,
+		branchData.Scope,
+		commitDescription,
+	)
+
+	println(commitMsg)
+	// offer to commit of just print the message
+
+	// Save history
 }
