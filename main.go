@@ -12,7 +12,12 @@ import (
 
 func main() {
 
-	// check if user have .kcommit/ on home
+	// Init and setup
+	// Create instance of FileManager and setup.
+	// FileManager should create the following:
+	//
+	// ~/.kcommit
+	// ~/.kcommit/.kcommit_history.json
 
 	fileManager, err := src.NewFileManager()
 	if err != nil {
@@ -21,8 +26,12 @@ func main() {
 
 	fileManager.BasicSetup()
 
-	// check if current project has .kcommitrc for custom list else use default karma list
-	cr := src.DefaultRules()
+	// Check for rules on current dir
+	// It may find .kcommitrc or not (not mandatory)
+	// In case current project does not have .kcommitrc it should use a default config (DefaultRules)
+	// More about kcommitrc on README.md.
+
+	rules := src.DefaultRules()
 
 	hasCustomConfig, err := fileManager.CheckIfPathExists(".kcommitrc")
 	if err != nil {
@@ -41,26 +50,110 @@ func main() {
 			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
 		}
 
-		cr = customRules
+		rules = customRules
 	}
 
-	// check if user have .kcommit/history
+	// It should fetch some basic info in order to continue.
+	// - Get current dir name as project name
+	// - Get current branch
+	// Those information should be needed to set kcommit_history.
 
-	// load header from history if present
+	currentProjName, err := src.GetCurrentDirectoryName()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// define header if there is no history offer to use branch name
+	currentBranchName, err := src.GetCurrentBranch()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// choose commit type
+	// Get the history content. If it's empty just set a basic structure.
+	// kcommit_history should not be empty at this point.
+	// It loads history to find the current scope to use on the commit.
+	// If scope is empty it should prompt for user to set one.
 
-	commitTypeOptions := src.CommitTypesToListItems(cr.CommitTypes)
+	historyStr, err := fileManager.GetHistoryContent()
+	if err != nil {
+		log.Fatalf("Failed to read kcommit history: %v", err)
+	}
+
+	historyObj := &src.ProjectModel{
+		Name: currentProjName,
+		Branches: []src.BranchModel{
+			{
+				Name:  currentBranchName,
+				Scope: "",
+			},
+		},
+	}
+
+	if !(historyStr == "") {
+		h, err := src.ParseJSONContent[src.ProjectModel](historyStr)
+		if err != nil {
+			log.Fatalf("Failed parsing history: %v", err)
+		}
+		historyObj = h
+	}
+
+	history := src.CreateHistoryModelFromProjectModel(historyObj)
+
+	// Check history has project/branch.
+	// Add project/branch to current history if needed.
+	if !history.HasBranch(currentProjName, currentBranchName) {
+		history.AddBranch(currentProjName, currentBranchName)
+	}
+
+	branchData, err := history.FindBranchData(currentProjName, currentBranchName)
+	if err != nil {
+		log.Fatalf("Failed to locate project data: %v", err)
+	}
+
+	// Define scope for this branch in case it's empty
+	if branchData.Scope == "" {
+		choices := []src.ListItem{
+			{
+				Title: "branch",
+				Desc:  "use branch name as scope",
+			},
+			{
+				Title: "custom",
+				Desc:  "write a custom string to be the scope",
+			},
+		}
+
+		answer := ""
+
+		p := tea.NewProgram(src.ListView("This branch does not have scope defined yet.", choices, &answer))
+		if _, err := p.Run(); err != nil {
+			fmt.Printf("there's been an error: %v", err)
+			os.Exit(1)
+		}
+
+		if answer == "branch" {
+			branchData.Scope = currentBranchName
+		} else if answer == "custom" {
+
+			// Show text input to write scope string.
+			os.Exit(0)
+
+		} else {
+			// This case should not happen.
+			os.Exit(0)
+		}
+	}
+
+	// Choose commit type
+
+	commitTypeOptions := src.CommitTypesToListItems(rules.CommitTypes)
 
 	selectCommitType := ""
 
 	p := tea.NewProgram(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("there's been an error: %v", err)
 		os.Exit(1)
 	}
 
-	print(selectCommitType)
+	// Write commit message
 }

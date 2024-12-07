@@ -71,6 +71,14 @@ func (m *FileManager) ReadFileContent(filePath string) (string, error) {
 	return string(data), nil
 }
 
+func (m *FileManager) GetHistoryContent() (string, error) {
+	str, err := m.ReadFileContent(m.KcommitHistory)
+	if err != nil {
+		return "", fmt.Errorf("error reading file %s: %v", m.KcommitHistory, err)
+	}
+	return str, nil
+}
+
 func (m *FileManager) BasicSetup() error {
 	if err := m.ensureKcommitDir(); err != nil {
 		return err
