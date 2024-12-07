@@ -20,58 +20,47 @@ But it's possible to define your own types creating a file `.kcommitrc` at the r
   "commitTypes": [
     {
       "type": "feat",
-      "description": "Adds a new feature to the project.",
-      "example": "feat(auth): add support for Google authentication"
+      "description": "Adds a new feature to the project."
     },
     {
       "type": "fix",
-      "description": "Fixes a bug in the code.",
-      "example": "fix(payment): fix discount calculation error"
+      "description": "Fixes a bug in the code."
     },
     {
       "type": "docs",
-      "description": "Updates documentation only, without changing the code.",
-      "example": "docs(readme): add instructions to initialize the project"
+      "description": "Updates documentation only, without changing the code."
     },
     {
       "type": "style",
-      "description": "Changes that do not affect functionality (e.g., formatting, whitespace).",
-      "example": "style(ui): adjust spacing between buttons in the form"
+      "description": "Changes that do not affect functionality (e.g., formatting, whitespace)."
     },
     {
       "type": "refactor",
-      "description": "Refactors code without changing existing functionality.",
-      "example": "refactor(api): optimize authentication logic"
+      "description": "Refactors code without changing existing functionality."
     },
     {
       "type": "test",
-      "description": "Adds or updates automated tests.",
-      "example": "test(api): add tests for the login route"
+      "description": "Adds or updates automated tests."
     },
     {
       "type": "chore",
-      "description": "Auxiliary tasks, such as dependency updates or configuration changes.",
-      "example": "chore(deps): update ESLint to version 8.4.0"
+      "description": "Auxiliary tasks, such as dependency updates or configuration changes."
     },
     {
       "type": "perf",
-      "description": "Performance improvements in the code.",
-      "example": "perf(render): reduce loading time for the homepage"
+      "description": "Performance improvements in the code."
     },
     {
       "type": "ci",
-      "description": "Changes to the continuous integration configuration.",
-      "example": "ci(actions): fix deploy workflow in GitHub Actions"
+      "description": "Changes to the continuous integration configuration."
     },
     {
       "type": "build",
-      "description": "Changes related to the build system or external dependencies.",
-      "example": "build: add support for builds on ARM environments"
+      "description": "Changes related to the build system or external dependencies."
     },
     {
       "type": "revert",
-      "description": "Reverts a previous commit.",
-      "example": "revert: revert commit abc1234 due to production issues"
+      "description": "Reverts a previous commit."
     }
   ]
 }

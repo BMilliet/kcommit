@@ -6,19 +6,24 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type ListItem struct {
+	Title string
+	Desc  string
+}
+
 type model struct {
 	title    string
-	choices  []string
+	choices  []ListItem
 	cursor   int
 	selected map[int]struct{}
 }
 
-func ListView(t string, l []string) model {
+func ListView(t string, li []ListItem) model {
 	tl := t + "\n"
 
 	return model{
 		title:    tl,
-		choices:  l,
+		choices:  li,
 		selected: make(map[int]struct{}),
 	}
 }
@@ -81,14 +86,8 @@ func (m model) View() string {
 			cursor = ">" // cursor!
 		}
 
-		// Is this choice selected?
-		checked := " " // not selected
-		if _, ok := m.selected[i]; ok {
-			checked = "x" // selected!
-		}
-
 		// Render the row
-		m.title += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+		m.title += fmt.Sprintf("%s %s\n", cursor, choice.Title)
 	}
 
 	// The footer

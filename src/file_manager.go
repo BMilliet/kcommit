@@ -1,7 +1,6 @@
 package src
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -70,14 +69,6 @@ func (m *FileManager) ReadFileContent(filePath string) (string, error) {
 		return "", fmt.Errorf("error reading file %s: %v", filePath, err)
 	}
 	return string(data), nil
-}
-
-func ParseJSONContent[T any](jsonString string, targetStruct *T) error {
-	err := json.Unmarshal([]byte(jsonString), targetStruct)
-	if err != nil {
-		return fmt.Errorf("error parsing JSON: %v", err)
-	}
-	return nil
 }
 
 func (m *FileManager) BasicSetup() error {

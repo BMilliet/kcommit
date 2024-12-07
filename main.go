@@ -22,15 +22,7 @@ func main() {
 	fileManager.BasicSetup()
 
 	// check if current project has .kcommitrc for custom list else use default karma list
-	l := []string{
-		"feat",
-		"fix",
-		"chore",
-		"refactor",
-		"style",
-		"test",
-		"docs",
-	}
+	cr := src.DefaultRules()
 
 	hasCustomConfig, err := fileManager.CheckIfPathExists(".kcommitrc")
 	if err != nil {
@@ -39,14 +31,17 @@ func main() {
 
 	if hasCustomConfig {
 
-		customConfigContent, err := fileManager.ReadFileContent(".kcommitrc")
+		customConfigStr, err := fileManager.ReadFileContent(".kcommitrc")
 		if err != nil {
 			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
 		}
 
-		print(customConfigContent)
+		customRules, err := src.ParseJSONContent[src.CommitRules](customConfigStr)
+		if err != nil {
+			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
+		}
 
-		// read and parse kcommitrc
+		cr = customRules
 	}
 
 	// check if user have .kcommit/history
@@ -57,7 +52,9 @@ func main() {
 
 	// choose commit type
 
-	p := tea.NewProgram(src.ListView("Please choose a commit type", l))
+	commitTypeOptions := src.CommitTypesToListItems(cr.CommitTypes)
+
+	p := tea.NewProgram(src.ListView("Please choose a commit type", commitTypeOptions))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
