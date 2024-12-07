@@ -12,6 +12,12 @@ import (
 
 func main() {
 
+	// Check if current dir has .git
+	// This is the return early error.
+	if !src.HasGitDirectory() {
+		log.Fatal("Current directory is not a git repository")
+	}
+
 	// Init and setup
 	// Create instance of FileManager and setup.
 	// FileManager should create the following:

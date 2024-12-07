@@ -50,3 +50,19 @@ func GetCurrentDirectoryName() (string, error) {
 
 	return filepath.Base(dir), nil
 }
+
+func HasGitDirectory() bool {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return false
+	}
+
+	gitDir := filepath.Join(currentDir, ".git")
+
+	info, err := os.Stat(gitDir)
+	if err != nil {
+		return false
+	}
+
+	return info.IsDir()
+}
