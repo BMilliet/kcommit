@@ -54,9 +54,13 @@ func main() {
 
 	commitTypeOptions := src.CommitTypesToListItems(cr.CommitTypes)
 
-	p := tea.NewProgram(src.ListView("Please choose a commit type", commitTypeOptions))
+	selectCommitType := ""
+
+	p := tea.NewProgram(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
+
+	print(selectCommitType)
 }

@@ -15,16 +15,16 @@ type model struct {
 	title    string
 	choices  []ListItem
 	cursor   int
-	selected map[int]struct{}
+	endValue *string
 }
 
-func ListView(t string, li []ListItem) model {
+func ListView(t string, li []ListItem, v *string) model {
 	tl := t + "\n"
 
 	return model{
 		title:    tl,
 		choices:  li,
-		selected: make(map[int]struct{}),
+		endValue: v,
 	}
 }
 
@@ -58,15 +58,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor++
 			}
 
-		// The "enter" key and the spacebar (a literal space) toggle
-		// the selected state for the item that the cursor is pointing at.
 		case "enter", " ":
-			_, ok := m.selected[m.cursor]
-			if ok {
-				delete(m.selected, m.cursor)
-			} else {
-				m.selected[m.cursor] = struct{}{}
-			}
+			*m.endValue = m.choices[m.cursor].Title
+			return m, tea.Quit
 		}
 	}
 
@@ -83,7 +77,7 @@ func (m model) View() string {
 		// Is the cursor pointing at this choice?
 		cursor := " " // no cursor
 		if m.cursor == i {
-			cursor = ">" // cursor!
+			cursor = "->"
 		}
 
 		// Render the row
