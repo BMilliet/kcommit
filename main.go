@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"kcommit/src"
 )
@@ -84,7 +83,7 @@ func main() {
 
 	historyObj := &src.HistoryDTO{
 		Projects: []src.ProjectModel{
-			src.ProjectModel{
+			{
 				Name: currentProjName,
 				Branches: []src.BranchModel{
 					{
@@ -134,17 +133,13 @@ func main() {
 		src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
 
 		if answer == "branch" {
-			branchData.Scope = currentBranchName
-		} else if answer == "custom" {
-			src.CreateView(src.TextInputView("Write a name for the scope", "", &branchData.Scope))
+			history.SetBranchScope(currentProjName, currentBranchName, currentBranchName)
 		} else {
-			// This case should not happen.
-			os.Exit(0)
+			newValue := ""
+			src.CreateView(src.TextInputView("Write a name for the scope", "", &newValue))
+			history.SetBranchScope(currentProjName, currentBranchName, newValue)
 		}
 	}
-
-	// TODO: Scope not being defined correctly
-	print(history.ToJson())
 
 	// Choose commit type
 

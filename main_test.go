@@ -5,21 +5,6 @@ import (
 	"testing"
 )
 
-// Função que será testada
-func Soma(a, b int) int {
-	return a + b
-}
-
-// Teste unitário para a função Soma
-func TestSoma(t *testing.T) {
-	resultado := Soma(2, 3)
-	esperado := 5
-
-	if resultado != esperado {
-		t.Errorf("Soma(2, 3) = %d; esperado %d", resultado, esperado)
-	}
-}
-
 func TestHistoryModel(t *testing.T) {
 	dto := src.HistoryDTO{
 		Projects: []src.ProjectModel{
@@ -101,6 +86,9 @@ func TestHistoryModel(t *testing.T) {
 		t.Errorf("expected 3 projects after adding new project, got %d", len(historyModel.Projects))
 	}
 
+	historyModel.SetBranchScope(newProjectName, newBranch1Name, "42")
+	historyModel.SetBranchScope(newProjectName, newBranch2Name, "99")
+
 	tests = []struct {
 		projectName   string
 		branchName    string
@@ -110,8 +98,8 @@ func TestHistoryModel(t *testing.T) {
 		{"Project 1", "proj_1_branch_2", "12"},
 		{"Project 2", "proj_2_branch_1", "21"},
 		{"Project 2", "proj_2_branch_2", "22"},
-		{newProjectName, newBranch1Name, ""},
-		{newProjectName, newBranch2Name, ""},
+		{newProjectName, newBranch1Name, "42"},
+		{newProjectName, newBranch2Name, "99"},
 	}
 
 	for _, test := range tests {

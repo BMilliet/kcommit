@@ -40,6 +40,10 @@ func (h *HistoryModel) FindBranchData(projectName string, branchName string) (*B
 	return &branch, nil
 }
 
+func (h *HistoryModel) SetBranchScope(projectName string, branchName string, scope string) {
+	h.Projects[projectName][branchName] = BranchDetail{Scope: scope}
+}
+
 func (h *HistoryModel) addProject(projectName string) {
 	if !h.hasProject(projectName) {
 		h.Projects[projectName] = make(map[string]BranchDetail)
@@ -94,7 +98,7 @@ func (h *HistoryModel) ToProjectModel() []ProjectModel {
 }
 
 type HistoryDTO struct {
-	Projects []ProjectModel `json:projects`
+	Projects []ProjectModel `json:"projects"`
 }
 
 type ProjectModel struct {
