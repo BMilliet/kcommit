@@ -7,3 +7,6 @@ deps:
 
 build:
 	@go build -o kcommit
+
+test:
+	@go test -v

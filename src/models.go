@@ -1,9 +1,16 @@
 package src
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type HistoryModel struct {
 	Projects map[string]map[string]BranchDetail `json:"projects"`
+}
+
+type BranchDetail struct {
+	Scope string `json:"scope"`
 }
 
 func (h *HistoryModel) hasProject(projectName string) bool {
@@ -52,8 +59,42 @@ func (h *HistoryModel) AddBranch(projectName, branchName string) error {
 	return nil
 }
 
-type BranchDetail struct {
-	Scope string `json:"scope"`
+func (h *HistoryModel) ToJson() (string, error) {
+	data := map[string][]ProjectModel{
+		"projects": h.ToProjectModel(),
+	}
+
+	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("error converting ProjectModel to JSON: %v", err)
+	}
+	return string(jsonBytes), nil
+}
+
+func (h *HistoryModel) ToProjectModel() []ProjectModel {
+	var projects []ProjectModel
+
+	for projectName, branches := range h.Projects {
+		project := ProjectModel{
+			Name:     projectName,
+			Branches: []BranchModel{},
+		}
+
+		for branchName, branchDetail := range branches {
+			project.Branches = append(project.Branches, BranchModel{
+				Name:  branchName,
+				Scope: branchDetail.Scope,
+			})
+		}
+
+		projects = append(projects, project)
+	}
+
+	return projects
+}
+
+type HistoryDTO struct {
+	Projects []ProjectModel `json:projects`
 }
 
 type ProjectModel struct {
@@ -128,42 +169,22 @@ func DefaultRules() *CommitRules {
 	}
 }
 
-func CreateHistoryModelFromProjectModel(project *ProjectModel) HistoryModel {
+func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
 	history := HistoryModel{
 		Projects: make(map[string]map[string]BranchDetail),
 	}
 
-	projectBranches := make(map[string]BranchDetail)
+	for _, project := range dto.Projects {
+		projectBranches := make(map[string]BranchDetail)
 
-	for _, branch := range project.Branches {
-		projectBranches[branch.Name] = BranchDetail{
-			Scope: branch.Scope,
+		for _, branch := range project.Branches {
+			projectBranches[branch.Name] = BranchDetail{
+				Scope: branch.Scope,
+			}
 		}
-	}
 
-	history.Projects[project.Name] = projectBranches
+		history.Projects[project.Name] = projectBranches
+	}
 
 	return history
-}
-
-func ConvertHistoryToProjectModel(history HistoryModel) []ProjectModel {
-	var projects []ProjectModel
-
-	for projectName, branches := range history.Projects {
-		project := ProjectModel{
-			Name:     projectName,
-			Branches: []BranchModel{},
-		}
-
-		for branchName, branchDetail := range branches {
-			project.Branches = append(project.Branches, BranchModel{
-				Name:  branchName,
-				Scope: branchDetail.Scope,
-			})
-		}
-
-		projects = append(projects, project)
-	}
-
-	return projects
 }

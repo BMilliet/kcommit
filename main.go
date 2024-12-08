@@ -82,25 +82,29 @@ func main() {
 		log.Fatalf("Failed to read kcommit history: %v", err)
 	}
 
-	historyObj := &src.ProjectModel{
-		Name: currentProjName,
-		Branches: []src.BranchModel{
-			{
-				Name:  currentBranchName,
-				Scope: "",
+	historyObj := &src.HistoryDTO{
+		Projects: []src.ProjectModel{
+			src.ProjectModel{
+				Name: currentProjName,
+				Branches: []src.BranchModel{
+					{
+						Name:  currentBranchName,
+						Scope: "",
+					},
+				},
 			},
 		},
 	}
 
 	if !(historyStr == "") {
-		h, err := src.ParseJSONContent[src.ProjectModel](historyStr)
+		h, err := src.ParseJSONContent[src.HistoryDTO](historyStr)
 		if err != nil {
 			log.Fatalf("Failed parsing history: %v", err)
 		}
 		historyObj = h
 	}
 
-	history := src.CreateHistoryModelFromProjectModel(historyObj)
+	history := src.CreateHistoryModelFromDTO(historyObj)
 
 	// Check history has project/branch.
 	// Add project/branch to current history if needed.
@@ -127,38 +131,33 @@ func main() {
 		}
 
 		answer := ""
-
 		src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
 
 		if answer == "branch" {
 			branchData.Scope = currentBranchName
 		} else if answer == "custom" {
-
-			// Show text input to write scope string.
-			scopeAnswer := ""
-
-			src.CreateView(src.TextInputView("Write a name for the scope", "", &scopeAnswer))
-
-			branchData.Scope = scopeAnswer
+			src.CreateView(src.TextInputView("Write a name for the scope", "", &branchData.Scope))
 		} else {
 			// This case should not happen.
 			os.Exit(0)
 		}
 	}
 
+	// TODO: Scope not being defined correctly
+	print(history.ToJson())
+
 	// Choose commit type
 
 	commitTypeOptions := src.CommitTypesToListItems(rules.CommitTypes)
-
 	selectCommitType := ""
-
 	src.CreateView(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
 
 	// Write commit message
 
 	commitDescription := ""
-
 	src.CreateView(src.TextInputView("Write the commit message", "", &commitDescription))
+
+	// Build commit message
 
 	commitMsg := fmt.Sprintf(
 		"%s(%s): %s",
@@ -167,8 +166,34 @@ func main() {
 		commitDescription,
 	)
 
-	println(commitMsg)
 	// offer to commit of just print the message
 
+	choices := []src.ListItem{
+		{
+			Title: "commit",
+			Desc:  fmt.Sprintf("kcommit will call git commit with: %s", commitMsg),
+		},
+		{
+			Title: "just print",
+			Desc:  "kcommit will not call git commit, just print the resulting commit message",
+		},
+	}
+
+	answer := ""
+	src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
+
+	if answer == "commit" {
+		println("git commit ->", commitMsg)
+	} else {
+		println(commitMsg)
+	}
+
 	// Save history
+	h, err := history.ToJson()
+	if err != nil {
+		log.Fatalf("Failed to write history.json: %v", err)
+	}
+
+	println(h)
+
 }
