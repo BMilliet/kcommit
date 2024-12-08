@@ -24,8 +24,8 @@ func CommitTypesToListItems(commitTypes []CommitType) []ListItem {
 	var listItems []ListItem
 	for _, commitType := range commitTypes {
 		listItems = append(listItems, ListItem{
-			Title: commitType.Type,
-			Desc:  commitType.Description,
+			T: commitType.Type,
+			D: commitType.Description,
 		})
 	}
 	return listItems

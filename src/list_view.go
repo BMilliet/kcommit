@@ -2,32 +2,61 @@ package src
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"strings"
 
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-type ListItem struct {
-	Title string
-	Desc  string
+const listHeight = 14
+
+var (
+	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
+	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
+)
+
+type itemDelegate struct{}
+
+func (d itemDelegate) Height() int                             { return 1 }
+func (d itemDelegate) Spacing() int                            { return 0 }
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	i, ok := listItem.(ListItem)
+	if !ok {
+		return
+	}
+
+	str := fmt.Sprintf("%d. %s", index+1, i.T)
+
+	fn := itemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+		}
+	}
+
+	fmt.Fprint(w, fn(str))
 }
+
+type ListItem struct {
+	T, D string
+}
+
+func (i ListItem) Title() string       { return i.T }
+func (i ListItem) Description() string { return i.D }
+func (i ListItem) FilterValue() string { return i.T }
 
 type ListViewModel struct {
-	title    string
-	choices  []ListItem
-	cursor   int
+	list     list.Model
+	selected string
 	endValue *string
 	quitting bool
-}
-
-func ListView(t string, li []ListItem, v *string) ListViewModel {
-	tl := t + "\n"
-
-	return ListViewModel{
-		title:    tl,
-		choices:  li,
-		endValue: v,
-		quitting: false,
-	}
 }
 
 func (m ListViewModel) Init() tea.Cmd {
@@ -36,52 +65,69 @@ func (m ListViewModel) Init() tea.Cmd {
 
 func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.list.SetWidth(msg.Width)
+		return m, nil
 
 	case tea.KeyMsg:
-
-		switch msg.String() {
-
-		case "ctrl+c", "q":
+		switch keypress := msg.String(); keypress {
+		case "q", "ctrl+c":
 			m.quitting = true
 			return m, tea.Quit
 
-		case "up", "k":
-			if m.cursor > 0 {
-				m.cursor--
-			}
-
-		case "down", "j":
-			if m.cursor < len(m.choices)-1 {
-				m.cursor++
-			}
-
-		case "enter", " ":
-			*m.endValue = m.choices[m.cursor].Title
+		case "enter":
 			m.quitting = true
+			i, ok := m.list.SelectedItem().(ListItem)
+			if ok {
+				*m.endValue = string(i.T)
+			}
 			return m, tea.Quit
 		}
 	}
 
-	return m, nil
+	i, ok := m.list.SelectedItem().(ListItem)
+	if ok {
+		m.selected = string(i.D)
+	}
+
+	var cmd tea.Cmd
+	m.list, cmd = m.list.Update(msg)
+	return m, cmd
 }
 
 func (m ListViewModel) View() string {
-
 	if m.quitting {
 		return ""
 	}
 
-	for i, choice := range m.choices {
-
-		cursor := " "
-		if m.cursor == i {
-			cursor = "->"
-		}
-
-		m.title += fmt.Sprintf("%s %s\n", cursor, choice.Title)
+	if m.selected != "" {
+		return m.list.View() + m.selected
 	}
 
-	m.title += "\nPress q to quit.\n"
+	return m.list.View()
+}
 
-	return m.title
+func ListView(title string, op []ListItem, endValue *string) {
+
+	items := []list.Item{}
+	for _, o := range op {
+		items = append(items, o)
+	}
+
+	const defaultWidth = 20
+
+	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
+	l.Title = title
+	l.SetShowStatusBar(false)
+	l.SetFilteringEnabled(true)
+	l.Styles.Title = titleStyle
+	l.Styles.PaginationStyle = paginationStyle
+	l.Styles.HelpStyle = helpStyle
+
+	m := ListViewModel{list: l, endValue: endValue, selected: ""}
+
+	if _, err := tea.NewProgram(m).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 }

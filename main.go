@@ -122,17 +122,17 @@ func main() {
 	if branchData.Scope == "" {
 		choices := []src.ListItem{
 			{
-				Title: "branch",
-				Desc:  "use branch name as scope",
+				T: "branch",
+				D: "use branch name as scope",
 			},
 			{
-				Title: "custom",
-				Desc:  "write a custom string to be the scope",
+				T: "custom",
+				D: "write a custom string to be the scope",
 			},
 		}
 
 		answer := ""
-		src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
+		src.ListView("This branch does not have scope defined yet.", choices, &answer)
 
 		if answer == "branch" {
 			history.SetBranchScope(currentProjName, currentBranchName, currentBranchName)
@@ -149,7 +149,7 @@ func main() {
 
 	commitTypeOptions := src.CommitTypesToListItems(rules.CommitTypes)
 	selectCommitType := ""
-	src.CreateView(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
+	src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType)
 
 	// Write commit message
 
@@ -169,20 +169,21 @@ func main() {
 
 	choices := []src.ListItem{
 		{
-			Title: "commit",
-			Desc:  fmt.Sprintf("kcommit will call git commit with: %s", commitMsg),
+			T: "commit",
+			D: fmt.Sprintf("kcommit will call git commit with: %s", commitMsg),
 		},
 		{
-			Title: "just print",
-			Desc:  "kcommit will not call git commit, just print the resulting commit message",
+			T: "just print",
+			D: "kcommit will not call git commit, just print the resulting commit message",
 		},
 	}
 
 	answer := ""
-	src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
+	src.ListView("This branch does not have scope defined yet.", choices, &answer)
 
 	if answer == "commit" {
-		src.GitCommit(commitMsg)
+		// src.GitCommit(commitMsg)
+		println(commitMsg)
 	} else {
 		println(commitMsg)
 	}
