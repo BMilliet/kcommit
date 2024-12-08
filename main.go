@@ -132,7 +132,7 @@ func main() {
 		}
 
 		answer := ""
-		src.ListView("This branch does not have scope defined yet.", choices, &answer)
+		src.ListView("This branch does not have scope defined yet.", choices, 8, &answer)
 
 		if answer == "branch" {
 			history.SetBranchScope(currentProjName, currentBranchName, currentBranchName)
@@ -149,7 +149,7 @@ func main() {
 
 	commitTypeOptions := src.CommitTypesToListItems(rules.CommitTypes)
 	selectCommitType := ""
-	src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType)
+	src.ListView("Please choose a commit type", commitTypeOptions, 28, &selectCommitType)
 
 	// Write commit message
 
@@ -179,7 +179,7 @@ func main() {
 	}
 
 	answer := ""
-	src.ListView("This branch does not have scope defined yet.", choices, &answer)
+	src.ListView("This branch does not have scope defined yet.", choices, 12, &answer)
 
 	if answer == "commit" {
 		// src.GitCommit(commitMsg)
