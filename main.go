@@ -182,7 +182,7 @@ func main() {
 	src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
 
 	if answer == "commit" {
-		println("git commit ->", commitMsg)
+		src.GitCommit(commitMsg)
 	} else {
 		println(commitMsg)
 	}
