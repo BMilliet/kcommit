@@ -84,7 +84,7 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 	const defaultWidth = 20
 
 	l := list.New(items, list.NewDefaultDelegate(), defaultWidth, height)
-	l.Title = title
+	l.Title = fmt.Sprintf("\n%s", title)
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(true)
 	l.Styles.Title = titleStyle

@@ -2,10 +2,24 @@ package src
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
+
+type Styles struct {
+	BorderColor lipgloss.Color
+	InputField  lipgloss.Style
+}
+
+func DefaultStyles() *Styles {
+	s := new(Styles)
+	s.BorderColor = lipgloss.Color("36")
+	s.InputField = lipgloss.NewStyle().BorderForeground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
+	return s
+}
 
 type (
 	errMsg error
@@ -17,20 +31,23 @@ type textInputViewModel struct {
 	question  string
 	endValue  *string
 	quitting  bool
+	styles    *Styles
 }
 
-func TextInputView(question, placeHolder string, value *string) textInputViewModel {
+func TextFieldViewModel(question, placeHolder string, value *string) textInputViewModel {
 	ti := textinput.New()
 	ti.Placeholder = placeHolder
 	ti.Focus()
 	ti.CharLimit = 156
-	ti.Width = 20
+	ti.Width = 28
+	ti.Placeholder = placeHolder
 
 	return textInputViewModel{
 		textInput: ti,
 		err:       nil,
 		question:  question,
 		endValue:  value,
+		styles:    DefaultStyles(),
 		quitting:  false,
 	}
 }
@@ -61,15 +78,24 @@ func (m textInputViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m textInputViewModel) View() string {
-
 	if m.quitting {
 		return ""
 	}
 
-	return fmt.Sprintf(
-		"%s\n\n%s\n\n%s",
-		m.question,
-		m.textInput.View(),
-		"(esc to quit)",
-	) + "\n"
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		fmt.Sprintf("\n%s\n", m.question),
+		m.styles.InputField.Render(m.textInput.View()),
+		"\n(ctrl+c to quit)",
+	)
+}
+
+func TextFieldView(title, placeHolder string, endValue *string) {
+
+	m := TextFieldViewModel(title, placeHolder, endValue)
+
+	if _, err := tea.NewProgram(m).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 }

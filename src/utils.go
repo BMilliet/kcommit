@@ -7,8 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 func ParseJSONContent[T any](jsonString string) (*T, error) {
@@ -79,12 +77,4 @@ func HasGitDirectory() bool {
 	}
 
 	return info.IsDir()
-}
-
-func CreateView(model tea.Model) {
-	a := tea.NewProgram(model)
-	if _, err := a.Run(); err != nil {
-		fmt.Printf("there's been an error: %v", err)
-		os.Exit(1)
-	}
 }
