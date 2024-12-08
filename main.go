@@ -6,8 +6,6 @@ import (
 	"os"
 
 	"kcommit/src"
-
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
@@ -130,11 +128,7 @@ func main() {
 
 		answer := ""
 
-		p := tea.NewProgram(src.ListView("This branch does not have scope defined yet.", choices, &answer))
-		if _, err := p.Run(); err != nil {
-			fmt.Printf("there's been an error: %v", err)
-			os.Exit(1)
-		}
+		src.CreateView(src.ListView("This branch does not have scope defined yet.", choices, &answer))
 
 		if answer == "branch" {
 			branchData.Scope = currentBranchName
@@ -143,11 +137,7 @@ func main() {
 			// Show text input to write scope string.
 			scopeAnswer := ""
 
-			p := tea.NewProgram(src.TextInputView("Write a name for the scope", "", &scopeAnswer))
-			if _, err := p.Run(); err != nil {
-				fmt.Printf("there's been an error: %v", err)
-				os.Exit(1)
-			}
+			src.CreateView(src.TextInputView("Write a name for the scope", "", &scopeAnswer))
 
 			branchData.Scope = scopeAnswer
 		} else {
@@ -162,21 +152,13 @@ func main() {
 
 	selectCommitType := ""
 
-	p := tea.NewProgram(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("there's been an error: %v", err)
-		os.Exit(1)
-	}
+	src.CreateView(src.ListView("Please choose a commit type", commitTypeOptions, &selectCommitType))
 
 	// Write commit message
 
 	commitDescription := ""
 
-	a := tea.NewProgram(src.TextInputView("Write the commit message", "", &commitDescription))
-	if _, err := a.Run(); err != nil {
-		fmt.Printf("there's been an error: %v", err)
-		os.Exit(1)
-	}
+	src.CreateView(src.TextInputView("Write the commit message", "", &commitDescription))
 
 	commitMsg := fmt.Sprintf(
 		"%s(%s): %s",

@@ -16,6 +16,7 @@ type textInputViewModel struct {
 	err       error
 	question  string
 	endValue  *string
+	quitting  bool
 }
 
 func TextInputView(question, placeHolder string, value *string) textInputViewModel {
@@ -30,6 +31,7 @@ func TextInputView(question, placeHolder string, value *string) textInputViewMod
 		err:       nil,
 		question:  question,
 		endValue:  value,
+		quitting:  false,
 	}
 }
 
@@ -45,6 +47,7 @@ func (m textInputViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
 			*m.endValue = m.textInput.Value()
+			m.quitting = true
 			return m, tea.Quit
 		}
 
@@ -58,6 +61,11 @@ func (m textInputViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m textInputViewModel) View() string {
+
+	if m.quitting {
+		return ""
+	}
+
 	return fmt.Sprintf(
 		"%s\n\n%s\n\n%s",
 		m.question,

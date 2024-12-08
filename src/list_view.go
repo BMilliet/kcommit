@@ -16,6 +16,7 @@ type ListViewModel struct {
 	choices  []ListItem
 	cursor   int
 	endValue *string
+	quitting bool
 }
 
 func ListView(t string, li []ListItem, v *string) ListViewModel {
@@ -25,34 +26,30 @@ func ListView(t string, li []ListItem, v *string) ListViewModel {
 		title:    tl,
 		choices:  li,
 		endValue: v,
+		quitting: false,
 	}
 }
 
 func (m ListViewModel) Init() tea.Cmd {
-	// Just return `nil`, which means "no I/O right now, please."
 	return nil
 }
 
 func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
-	// Is it a key press?
 	case tea.KeyMsg:
 
-		// Cool, what was the actual key pressed?
 		switch msg.String() {
 
-		// These keys should exit the program.
 		case "ctrl+c", "q":
+			m.quitting = true
 			return m, tea.Quit
 
-		// The "up" and "k" keys move the cursor up
 		case "up", "k":
 			if m.cursor > 0 {
 				m.cursor--
 			}
 
-		// The "down" and "j" keys move the cursor down
 		case "down", "j":
 			if m.cursor < len(m.choices)-1 {
 				m.cursor++
@@ -60,33 +57,31 @@ func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter", " ":
 			*m.endValue = m.choices[m.cursor].Title
+			m.quitting = true
 			return m, tea.Quit
 		}
 	}
 
-	// Return the updated ListViewModel to the Bubble Tea runtime for processing.
-	// Note that we're not returning a command.
 	return m, nil
 }
 
 func (m ListViewModel) View() string {
 
-	// Iterate over our choices
+	if m.quitting {
+		return ""
+	}
+
 	for i, choice := range m.choices {
 
-		// Is the cursor pointing at this choice?
-		cursor := " " // no cursor
+		cursor := " "
 		if m.cursor == i {
 			cursor = "->"
 		}
 
-		// Render the row
 		m.title += fmt.Sprintf("%s %s\n", cursor, choice.Title)
 	}
 
-	// The footer
 	m.title += "\nPress q to quit.\n"
 
-	// Send the UI for rendering
 	return m.title
 }
