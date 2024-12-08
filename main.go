@@ -103,11 +103,13 @@ func main() {
 		historyObj = h
 	}
 
+	updateHistory := false
 	history := src.CreateHistoryModelFromDTO(historyObj)
 
 	// Check history has project/branch.
 	// Add project/branch to current history if needed.
 	if !history.HasBranch(currentProjName, currentBranchName) {
+		updateHistory = true
 		history.AddBranch(currentProjName, currentBranchName)
 	}
 
@@ -139,6 +141,8 @@ func main() {
 			src.CreateView(src.TextInputView("Write a name for the scope", "", &newValue))
 			history.SetBranchScope(currentProjName, currentBranchName, newValue)
 		}
+
+		updateHistory = true
 	}
 
 	// Choose commit type
@@ -161,7 +165,7 @@ func main() {
 		commitDescription,
 	)
 
-	// offer to commit of just print the message
+	// offer to commit of just print the commit message
 
 	choices := []src.ListItem{
 		{
@@ -183,12 +187,16 @@ func main() {
 		println(commitMsg)
 	}
 
-	// Save history
+	// Save history if has updates
+
 	h, err := history.ToJson()
 	if err != nil {
 		log.Fatalf("Failed to write history.json: %v", err)
 	}
 
-	println(h)
+	if updateHistory {
+		fileManager.WriteHistoryContent(h)
+	}
 
+	println("End")
 }
