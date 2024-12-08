@@ -79,6 +79,22 @@ func (m *FileManager) GetHistoryContent() (string, error) {
 	return str, nil
 }
 
+func (m *FileManager) WriteHistoryContent(content string) error {
+	err := m.writeFileContent(m.KcommitHistory, content)
+	if err != nil {
+		return fmt.Errorf("error writing to file %s: %v", m.KcommitHistory, err)
+	}
+	return nil
+}
+
+func (m *FileManager) writeFileContent(filePath, content string) error {
+	err := os.WriteFile(filePath, []byte(content), 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write to file %s: %v", filePath, err)
+	}
+	return nil
+}
+
 func (m *FileManager) BasicSetup() error {
 	if err := m.ensureKcommitDir(); err != nil {
 		return err
