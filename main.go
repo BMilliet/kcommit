@@ -132,16 +132,18 @@ func main() {
 		}
 
 		answer := ""
-		src.ListView("This branch does not have scope defined yet.", choices, 10, &answer)
+		src.ListView("This branch does not have scope defined yet.", choices, 16, &answer)
 		src.ValidateInput(answer)
 
 		if answer == "branch" {
 			history.SetBranchScope(currentProjName, currentBranchName, currentBranchName)
+			branchData.Scope = currentBranchName
 		} else {
 			newValue := ""
 			src.TextFieldView("Write a name for the scope", "", &newValue)
 			src.ValidateInput(newValue)
 			history.SetBranchScope(currentProjName, currentBranchName, newValue)
+			branchData.Scope = newValue
 		}
 
 		updateHistory = true
