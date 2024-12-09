@@ -3,6 +3,7 @@ package src
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type HistoryModel struct {
@@ -10,7 +11,8 @@ type HistoryModel struct {
 }
 
 type BranchDetail struct {
-	Scope string `json:"scope"`
+	Scope     string    `json:"scope"`
+	UpdatedAt time.Time `json:"created"`
 }
 
 func (h *HistoryModel) hasProject(projectName string) bool {
@@ -40,8 +42,8 @@ func (h *HistoryModel) FindBranchData(projectName string, branchName string) (*B
 	return &branch, nil
 }
 
-func (h *HistoryModel) SetBranchScope(projectName string, branchName string, scope string) {
-	h.Projects[projectName][branchName] = BranchDetail{Scope: scope}
+func (h *HistoryModel) SetBranch(projectName string, branchName string, scope string) {
+	h.Projects[projectName][branchName] = BranchDetail{Scope: scope, UpdatedAt: time.Now()}
 }
 
 func (h *HistoryModel) addProject(projectName string) {
@@ -86,8 +88,9 @@ func (h *HistoryModel) ToProjectModel() []ProjectModel {
 
 		for branchName, branchDetail := range branches {
 			project.Branches = append(project.Branches, BranchModel{
-				Name:  branchName,
-				Scope: branchDetail.Scope,
+				Name:      branchName,
+				Scope:     branchDetail.Scope,
+				UpdatedAt: branchDetail.UpdatedAt,
 			})
 		}
 
@@ -107,8 +110,9 @@ type ProjectModel struct {
 }
 
 type BranchModel struct {
-	Name  string `json:"name"`
-	Scope string `json:"scope"`
+	Name      string    `json:"name"`
+	Scope     string    `json:"scope"`
+	UpdatedAt time.Time `json:"created"`
 }
 
 type CommitType struct {
@@ -183,7 +187,8 @@ func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
 
 		for _, branch := range project.Branches {
 			projectBranches[branch.Name] = BranchDetail{
-				Scope: branch.Scope,
+				Scope:     branch.Scope,
+				UpdatedAt: branch.UpdatedAt,
 			}
 		}
 
@@ -191,4 +196,24 @@ func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
 	}
 
 	return history
+}
+
+// TODO: this logic needs to be adjusted. Couting just the year means cleaning the cache completely on day 1.
+func (h *HistoryModel) CleanOldBranches() {
+	currentTime := time.Now()
+	currentYear := currentTime.Year()
+
+	oneMonthAgo := currentTime.AddDate(0, -1, 0)
+
+	for project, branches := range h.Projects {
+		for branch, details := range branches {
+			if details.UpdatedAt.Before(oneMonthAgo) || details.UpdatedAt.Year() < currentYear {
+				delete(branches, branch)
+			}
+		}
+
+		if len(branches) == 0 {
+			delete(h.Projects, project)
+		}
+	}
 }

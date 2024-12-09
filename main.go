@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"kcommit/src"
 )
@@ -87,8 +88,9 @@ func main() {
 				Name: currentProjName,
 				Branches: []src.BranchModel{
 					{
-						Name:  currentBranchName,
-						Scope: "",
+						Name:      currentBranchName,
+						Scope:     "",
+						UpdatedAt: time.Now(),
 					},
 				},
 			},
@@ -103,13 +105,11 @@ func main() {
 		historyObj = h
 	}
 
-	updateHistory := false
 	history := src.CreateHistoryModelFromDTO(historyObj)
 
 	// Check history has project/branch.
 	// Add project/branch to current history if needed.
 	if !history.HasBranch(currentProjName, currentBranchName) {
-		updateHistory = true
 		history.AddBranch(currentProjName, currentBranchName)
 	}
 
@@ -136,18 +136,19 @@ func main() {
 		src.ValidateInput(answer)
 
 		if answer == "branch" {
-			history.SetBranchScope(currentProjName, currentBranchName, currentBranchName)
 			branchData.Scope = currentBranchName
 		} else {
 			newValue := ""
 			src.TextFieldView("Write a name for the scope", "", &newValue)
 			src.ValidateInput(newValue)
-			history.SetBranchScope(currentProjName, currentBranchName, newValue)
 			branchData.Scope = newValue
 		}
 
-		updateHistory = true
 	}
+
+	// This will set the scope to be save and the time it was updated.
+	// Time updated is also used lated to clear out old branches
+	history.SetBranch(currentProjName, currentBranchName, branchData.Scope)
 
 	// Choose commit type
 
@@ -189,22 +190,22 @@ func main() {
 	src.ValidateInput(answer)
 
 	if answer == "commit" {
-		// src.GitCommit(commitMsg)
-		println(commitMsg)
+		src.GitCommit(commitMsg)
 	} else {
 		println(commitMsg)
 	}
 
-	// Save history if has updates
+	// Clean cache.
+	history.CleanOldBranches()
+
+	// Save history
 
 	h, err := history.ToJson()
 	if err != nil {
 		log.Fatalf("Failed to write history.json: %v", err)
 	}
 
-	if updateHistory {
-		fileManager.WriteHistoryContent(h)
-	}
+	fileManager.WriteHistoryContent(h)
 
 	println("End")
 }

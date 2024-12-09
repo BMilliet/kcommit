@@ -22,7 +22,7 @@ func DefaultStyles() *Styles {
 	s := new(Styles)
 	s.BorderColor = lipgloss.Color("36")
 	s.FooterColor = lipgloss.Color("#57cc99")
-	s.TitleColor = lipgloss.Color("37")
+	s.TitleColor = lipgloss.Color("#CC99FF")
 	s.InputField = lipgloss.NewStyle().BorderForeground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
 	s.FooterStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(s.FooterColor).Italic(true)
 	s.TitleStyle = lipgloss.NewStyle().PaddingLeft(8).Foreground(s.TitleColor).Bold(true)

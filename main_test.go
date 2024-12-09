@@ -3,6 +3,7 @@ package main
 import (
 	"kcommit/src"
 	"testing"
+	"time"
 )
 
 func TestHistoryModel(t *testing.T) {
@@ -86,8 +87,8 @@ func TestHistoryModel(t *testing.T) {
 		t.Errorf("expected 3 projects after adding new project, got %d", len(historyModel.Projects))
 	}
 
-	historyModel.SetBranchScope(newProjectName, newBranch1Name, "42")
-	historyModel.SetBranchScope(newProjectName, newBranch2Name, "99")
+	historyModel.SetBranch(newProjectName, newBranch1Name, "42")
+	historyModel.SetBranch(newProjectName, newBranch2Name, "99")
 
 	tests = []struct {
 		projectName   string
@@ -103,13 +104,11 @@ func TestHistoryModel(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		// Verifica se a branch existe
 		if !historyModel.HasBranch(test.projectName, test.branchName) {
 			t.Errorf("expected branch '%s' in project '%s' to exist, but it does not", test.branchName, test.projectName)
 			continue
 		}
 
-		// Verifica os detalhes da branch
 		branchData, err := historyModel.FindBranchData(test.projectName, test.branchName)
 		if err != nil {
 			t.Errorf("error finding branch '%s' in project '%s': %v", test.branchName, test.projectName, err)
@@ -120,5 +119,48 @@ func TestHistoryModel(t *testing.T) {
 			t.Errorf("unexpected scope for branch '%s' in project '%s': expected '%s', got '%s'",
 				test.branchName, test.projectName, test.expectedScope, branchData.Scope)
 		}
+	}
+}
+
+func TestCleanOldBranches(t *testing.T) {
+	referenceTime := time.Date(2024, 12, 1, 12, 0, 0, 0, time.UTC)
+	lessThanOneMonthAgo := referenceTime.AddDate(0, 0, -20)
+	oneMonthAgo := referenceTime.AddDate(0, -1, 0)
+	twoMonthsAgo := referenceTime.AddDate(0, -2, 0)
+
+	history := src.HistoryModel{
+		Projects: map[string]map[string]src.BranchDetail{
+			"ProjectA": {
+				"Branch1": {Scope: "feature", UpdatedAt: twoMonthsAgo},
+				"Branch2": {Scope: "bugfix", UpdatedAt: referenceTime},
+			},
+			"ProjectB": {
+				"Branch1": {Scope: "hotfix", UpdatedAt: oneMonthAgo},
+				"Branch2": {Scope: "ui", UpdatedAt: lessThanOneMonthAgo},
+			},
+			"ProjectC": {
+				"Branch1": {Scope: "docs", UpdatedAt: lessThanOneMonthAgo},
+			},
+		},
+	}
+
+	history.CleanOldBranches()
+
+	_, err := history.FindBranchData("ProjectA", "Branch2")
+	if err != nil {
+		t.Errorf("FindBranchData() returned an unexpected error")
+		return
+	}
+
+	_, err = history.FindBranchData("ProjectB", "Branch2")
+	if err != nil {
+		t.Errorf("FindBranchData() returned an unexpected error")
+		return
+	}
+
+	_, err = history.FindBranchData("ProjectC", "Branch1")
+	if err != nil {
+		t.Errorf("FindBranchData() returned an unexpected error")
+		return
 	}
 }
