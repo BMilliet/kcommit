@@ -78,3 +78,9 @@ func HasGitDirectory() bool {
 
 	return info.IsDir()
 }
+
+func ValidateInput(v string) {
+	if v == ExitSignal {
+		os.Exit(0)
+	}
+}

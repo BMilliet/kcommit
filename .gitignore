@@ -26,3 +26,7 @@ go.work.sum
 
 # custom
 .debug_rc.json
+
+# Executable name
+kc
+kcommit

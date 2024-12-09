@@ -10,14 +10,22 @@ import (
 )
 
 type Styles struct {
+	FooterColor lipgloss.Color
 	BorderColor lipgloss.Color
+	TitleColor  lipgloss.Color
 	InputField  lipgloss.Style
+	FooterStyle lipgloss.Style
+	TitleStyle  lipgloss.Style
 }
 
 func DefaultStyles() *Styles {
 	s := new(Styles)
 	s.BorderColor = lipgloss.Color("36")
+	s.FooterColor = lipgloss.Color("#57cc99")
+	s.TitleColor = lipgloss.Color("37")
 	s.InputField = lipgloss.NewStyle().BorderForeground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
+	s.FooterStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(s.FooterColor).Italic(true)
+	s.TitleStyle = lipgloss.NewStyle().PaddingLeft(8).Foreground(s.TitleColor).Bold(true)
 	return s
 }
 
@@ -62,9 +70,13 @@ func (m textInputViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
+		case tea.KeyEnter:
 			*m.endValue = m.textInput.Value()
 			m.quitting = true
+			return m, tea.Quit
+
+		case tea.KeyCtrlC, tea.KeyEsc:
+			*m.endValue = ExitSignal
 			return m, tea.Quit
 		}
 
@@ -84,9 +96,9 @@ func (m textInputViewModel) View() string {
 
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-		fmt.Sprintf("\n%s\n", m.question),
+		m.styles.TitleStyle.Render(fmt.Sprintf("\n%s\n", m.question)),
 		m.styles.InputField.Render(m.textInput.View()),
-		"\n(ctrl+c to quit)",
+		m.styles.FooterStyle.Render("\n(ctrl+c or esc to quit)"),
 	)
 }
 

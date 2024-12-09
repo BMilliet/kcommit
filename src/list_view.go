@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	titleStyle      = lipgloss.NewStyle().MarginLeft(2)
 	paginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
 	helpStyle       = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
 )
@@ -28,6 +27,7 @@ type ListViewModel struct {
 	selected string
 	endValue *string
 	quitting bool
+	styles   Styles
 }
 
 func (m ListViewModel) Init() tea.Cmd {
@@ -42,9 +42,6 @@ func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
-		case "q", "ctrl+c":
-			m.quitting = true
-			return m, tea.Quit
 
 		case "enter":
 			m.quitting = true
@@ -52,6 +49,10 @@ func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if ok {
 				*m.endValue = string(i.T)
 			}
+			return m, tea.Quit
+
+		case "ctrl+c", "esc", "q":
+			*m.endValue = ExitSignal
 			return m, tea.Quit
 		}
 	}
@@ -81,17 +82,20 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 		items = append(items, o)
 	}
 
+	styles := DefaultStyles()
+
 	const defaultWidth = 20
 
 	l := list.New(items, list.NewDefaultDelegate(), defaultWidth, height)
 	l.Title = fmt.Sprintf("\n%s", title)
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(true)
-	l.Styles.Title = titleStyle
+	l.Styles.Title = styles.TitleStyle
+	l.Styles.Title.Align(lipgloss.Left)
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := ListViewModel{list: l, endValue: endValue, selected: ""}
+	m := ListViewModel{list: l, endValue: endValue, selected: "", styles: *styles}
 
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("Error running program:", err)

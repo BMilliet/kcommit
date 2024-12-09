@@ -6,7 +6,7 @@ deps:
 	@go mod tidy
 
 build:
-	@go build -o kcommit
+	@go build -o kc
 
 test:
 	@go test -v
