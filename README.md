@@ -1,6 +1,14 @@
 # kcommit
 Git commit generator using Karma commit message style.
 
+
+## Documentation
+
+* [How it works](#how-it-works)
+* [Build from source](#build-it-from-source)
+* [Custom config](#kcommit-custom-configs)
+
+
 ## How it works
 kcommit simplifies creating commit messages by guiding you through the process. It automatically saves and reuses a `scope` for each project and branch, speeding up future commits.
 
@@ -12,10 +20,6 @@ A typical commit message looks like:
 The first segment is `the commit-type`. kcommit provides a default list of types, but you can define custom ones for each project [custom-config](#kcommit-custom-configs).
 Finally, kcommit can either print the commit message or commit it for you.
 
-## Documentation
-
-* [Build from source](#build-it-from-source)
-* [Custom config](#kcommit-custom-configs)
 
 ## Build it from source
 
@@ -24,8 +28,8 @@ Run:
 ```sh
 make build
 ```
-The command will create an executable named kc.
-To use it you can add it to your PATH.
+The command will create an executable named `kc`.
+To use it you can add it to your `PATH`.
 
 
 ## kcommit custom configs
