@@ -9,26 +9,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type Styles struct {
-	FooterColor lipgloss.Color
-	BorderColor lipgloss.Color
-	TitleColor  lipgloss.Color
-	InputField  lipgloss.Style
-	FooterStyle lipgloss.Style
-	TitleStyle  lipgloss.Style
-}
-
-func DefaultStyles() *Styles {
-	s := new(Styles)
-	s.BorderColor = lipgloss.Color("36")
-	s.FooterColor = lipgloss.Color("#57cc99")
-	s.TitleColor = lipgloss.Color("#CC99FF")
-	s.InputField = lipgloss.NewStyle().BorderForeground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
-	s.FooterStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(s.FooterColor).Italic(true)
-	s.TitleStyle = lipgloss.NewStyle().PaddingLeft(8).Foreground(s.TitleColor).Bold(true)
-	return s
-}
-
 type (
 	errMsg error
 )

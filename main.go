@@ -36,6 +36,7 @@ func main() {
 	// More about kcommitrc on README.md.
 
 	rules := src.DefaultRules()
+	styles := src.DefaultStyles()
 
 	hasCustomConfig, err := fileManager.CheckIfPathExists(src.KcommitRcFileName)
 	if err != nil {
@@ -192,7 +193,7 @@ func main() {
 	if answer == "commit" {
 		src.GitCommit(commitMsg)
 	} else {
-		println(commitMsg)
+		println(styles.Text(commitMsg, styles.ThistleColor))
 	}
 
 	// Clean cache.
