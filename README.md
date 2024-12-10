@@ -1,6 +1,21 @@
 # kcommit
 Git commit generator on Karma style
 
+## Documentation
+
+* [Build from source](#build-it-from-source)
+* [Custom config](#kcommit-custom-configs)
+
+## Build it from source
+
+Install go on your machine.
+Run:
+```sh
+make build
+```
+The command will create an executable named kc.
+To use it you can add it to your PATH.
+
 
 ## kcommit custom configs
 By default kcommit used the basic types from karma such as:
