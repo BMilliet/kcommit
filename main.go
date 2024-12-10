@@ -191,7 +191,11 @@ func main() {
 	src.ValidateInput(answer)
 
 	if answer == "commit" {
-		src.GitCommit(commitMsg)
+		msg, err := src.GitCommit(commitMsg)
+		if err != nil {
+			log.Fatalf("Failed to git commit: %v", err)
+		}
+		println(styles.Text(msg, styles.ThistleColor))
 	} else {
 		println(styles.Text(commitMsg, styles.ThistleColor))
 	}

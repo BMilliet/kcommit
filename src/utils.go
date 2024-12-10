@@ -42,16 +42,15 @@ func GetCurrentBranch() (string, error) {
 	return branch[:len(branch)-1], nil
 }
 
-func GitCommit(msg string) error {
+func GitCommit(msg string) (string, error) {
 	cmd := exec.Command("git", "commit", "-m", msg)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("GitCommit -> %v", err)
+		return "", fmt.Errorf("GitCommit -> %v", err)
 	}
 
-	fmt.Printf("Git commit successful: %s\n", string(output))
-	return nil
+	return string(output), nil
 }
 
 func GetCurrentDirectoryName() (string, error) {
