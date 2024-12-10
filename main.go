@@ -206,6 +206,4 @@ func main() {
 	}
 
 	fileManager.WriteHistoryContent(h)
-
-	println("End")
 }
