@@ -1,5 +1,5 @@
 # kcommit
-Git commit generator on Karma style
+Git commit generator using Karma commit message style.
 
 ## How it works
 kcommit simplifies creating commit messages by guiding you through the process. It automatically saves and reuses a `scope` for each project and branch, speeding up future commits.
