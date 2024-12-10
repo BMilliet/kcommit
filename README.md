@@ -1,6 +1,17 @@
 # kcommit
 Git commit generator on Karma style
 
+## How it works
+kcommit simplifies creating commit messages by guiding you through the process. It automatically saves and reuses a `scope` for each project and branch, speeding up future commits.
+
+Scopes are stored in `~/.kcommit/.kcommit_history.json`. kcommit manages this cache by removing unused branches after 1 month.
+
+A typical commit message looks like:
+`feat(cache-handling-remove-old-branches): create method to remove old branches`
+
+The first segment is `the commit-type`. kcommit provides a default list of types, but you can define custom ones for each project [custom-config](#kcommit-custom-configs).
+Finally, kcommit can either print the commit message or commit it for you.
+
 ## Documentation
 
 * [Build from source](#build-it-from-source)
