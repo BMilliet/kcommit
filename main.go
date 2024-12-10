@@ -37,14 +37,14 @@ func main() {
 
 	rules := src.DefaultRules()
 
-	hasCustomConfig, err := fileManager.CheckIfPathExists(".kcommitrc")
+	hasCustomConfig, err := fileManager.CheckIfPathExists(src.KcommitRcFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if hasCustomConfig {
 
-		customConfigStr, err := fileManager.ReadFileContent(".kcommitrc")
+		customConfigStr, err := fileManager.ReadFileContent(src.KcommitRcFileName)
 		if err != nil {
 			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
 		}
