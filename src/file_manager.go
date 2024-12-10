@@ -15,11 +15,11 @@ type FileManager struct {
 func NewFileManager() (*FileManager, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("error getting home directory: %v", err)
+		return nil, fmt.Errorf("NewFileManager -> %v", err)
 	}
 
-	KcommitDir := filepath.Join(homeDir, ".kcommit")
-	KcommitHistory := filepath.Join(KcommitDir, ".kcommit_history.json")
+	KcommitDir := filepath.Join(homeDir, KcommitDirName)
+	KcommitHistory := filepath.Join(KcommitDir, KcommitHistoryFileName)
 
 	return &FileManager{
 		HomeDir:        homeDir,
@@ -32,7 +32,7 @@ func (m *FileManager) ensureKcommitDir() error {
 	if _, err := os.Stat(m.KcommitDir); os.IsNotExist(err) {
 		err := os.Mkdir(m.KcommitDir, 0755)
 		if err != nil {
-			return fmt.Errorf("error creating directory: %v", err)
+			return fmt.Errorf("ensureKcommitDir -> %v", err)
 		}
 	}
 	return nil
@@ -46,7 +46,7 @@ func (m *FileManager) CheckIfPathExists(path string) (bool, error) {
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return false, fmt.Errorf("error checking if path exists: %v", err)
+	return false, fmt.Errorf("CheckIfPathExists -> %v", err)
 }
 
 func (m *FileManager) checkAndCreateFile(filePath string) error {
@@ -57,7 +57,7 @@ func (m *FileManager) checkAndCreateFile(filePath string) error {
 	if !exists {
 		_, err := os.Create(filePath)
 		if err != nil {
-			return fmt.Errorf("error creating %s: %v", filePath, err)
+			return fmt.Errorf("checkAndCreateFile -> %s %v", filePath, err)
 		}
 	}
 	return nil
@@ -66,7 +66,7 @@ func (m *FileManager) checkAndCreateFile(filePath string) error {
 func (m *FileManager) ReadFileContent(filePath string) (string, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return "", fmt.Errorf("error reading file %s: %v", filePath, err)
+		return "", fmt.Errorf("ReadFileContent -> %s %v", filePath, err)
 	}
 	return string(data), nil
 }
@@ -74,7 +74,7 @@ func (m *FileManager) ReadFileContent(filePath string) (string, error) {
 func (m *FileManager) GetHistoryContent() (string, error) {
 	str, err := m.ReadFileContent(m.KcommitHistory)
 	if err != nil {
-		return "", fmt.Errorf("error reading file %s: %v", m.KcommitHistory, err)
+		return "", fmt.Errorf("GetHistoryContent -> %s %v", m.KcommitHistory, err)
 	}
 	return str, nil
 }
@@ -82,7 +82,7 @@ func (m *FileManager) GetHistoryContent() (string, error) {
 func (m *FileManager) WriteHistoryContent(content string) error {
 	err := m.writeFileContent(m.KcommitHistory, content)
 	if err != nil {
-		return fmt.Errorf("error writing to file %s: %v", m.KcommitHistory, err)
+		return fmt.Errorf("WriteHistoryContent -> %s: %v", m.KcommitHistory, err)
 	}
 	return nil
 }
@@ -90,7 +90,7 @@ func (m *FileManager) WriteHistoryContent(content string) error {
 func (m *FileManager) writeFileContent(filePath, content string) error {
 	err := os.WriteFile(filePath, []byte(content), 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write to file %s: %v", filePath, err)
+		return fmt.Errorf("writeFileContent -> %s %v", filePath, err)
 	}
 	return nil
 }

@@ -13,7 +13,7 @@ func ParseJSONContent[T any](jsonString string) (*T, error) {
 	var targetStruct T
 	err := json.Unmarshal([]byte(jsonString), &targetStruct)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing JSON: %v", err)
+		return nil, fmt.Errorf("ParseJSONContent -> %v", err)
 	}
 	return &targetStruct, nil
 }
@@ -35,7 +35,7 @@ func GetCurrentBranch() (string, error) {
 	cmd.Stdout = &out
 
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("error running git command: %v", err)
+		return "", fmt.Errorf("GetCurrentBranch -> %v", err)
 	}
 
 	branch := out.String()
@@ -47,7 +47,7 @@ func GitCommit(msg string) error {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("git commit failed: %v\nOutput: %s", err, string(output))
+		return fmt.Errorf("GitCommit -> %v", err)
 	}
 
 	fmt.Printf("Git commit successful: %s\n", string(output))
@@ -57,7 +57,7 @@ func GitCommit(msg string) error {
 func GetCurrentDirectoryName() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
-		return "", fmt.Errorf("error getting current directory: %v", err)
+		return "", fmt.Errorf("GetCurrentDirectoryName -> %v", err)
 	}
 
 	return filepath.Base(dir), nil

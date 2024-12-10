@@ -106,7 +106,7 @@ func TextFieldView(title, placeHolder string, endValue *string) {
 	m := TextFieldViewModel(title, placeHolder, endValue)
 
 	if _, err := tea.NewProgram(m).Run(); err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("TextFieldView -> ", err)
 		os.Exit(1)
 	}
 }

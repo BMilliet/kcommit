@@ -98,7 +98,7 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 	m := ListViewModel{list: l, endValue: endValue, selected: "", styles: *styles}
 
 	if _, err := tea.NewProgram(m).Run(); err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("ListView -> ", err)
 		os.Exit(1)
 	}
 }

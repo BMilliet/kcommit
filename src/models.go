@@ -31,11 +31,11 @@ func (h *HistoryModel) HasBranch(projectName string, branchName string) bool {
 
 func (h *HistoryModel) FindBranchData(projectName string, branchName string) (*BranchDetail, error) {
 	if !h.hasProject(projectName) {
-		return nil, fmt.Errorf("project '%s' not found", projectName)
+		return nil, fmt.Errorf("FindBranchData -> %s", projectName)
 	}
 
 	if !h.HasBranch(projectName, branchName) {
-		return nil, fmt.Errorf("branch '%s' not found in project '%s'", branchName, projectName)
+		return nil, fmt.Errorf("FindBranchData -> %s %s", branchName, projectName)
 	}
 
 	branch := h.Projects[projectName][branchName]
@@ -58,7 +58,7 @@ func (h *HistoryModel) AddBranch(projectName, branchName string) error {
 	}
 
 	if h.HasBranch(projectName, branchName) {
-		return fmt.Errorf("branch '%s' already exists in project '%s'", branchName, projectName)
+		return fmt.Errorf("AddBranch -> %s %s", branchName, projectName)
 	}
 
 	h.Projects[projectName][branchName] = BranchDetail{Scope: ""}
@@ -72,7 +72,7 @@ func (h *HistoryModel) ToJson() (string, error) {
 
 	jsonBytes, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		return "", fmt.Errorf("error converting ProjectModel to JSON: %v", err)
+		return "", fmt.Errorf("ToJson -> %v", err)
 	}
 	return string(jsonBytes), nil
 }
