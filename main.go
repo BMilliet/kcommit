@@ -195,9 +195,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to git commit: %v", err)
 		}
-		println(styles.Text(msg, styles.ThistleColor))
+		println(styles.Text(msg, styles.PeachColor))
 	} else {
-		println(styles.Text(commitMsg, styles.ThistleColor))
+		println(styles.Text(commitMsg, styles.PeachColor))
 	}
 
 	// Clean cache.

@@ -86,7 +86,18 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 
 	const defaultWidth = 20
 
-	l := list.New(items, list.NewDefaultDelegate(), defaultWidth, height)
+	delegate := list.NewDefaultDelegate()
+
+	delegate.Styles.SelectedTitle = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder(), false, false, false, true).
+		BorderForeground(styles.SelectedTitleColor).
+		Foreground(styles.SelectedTitleColor).
+		Padding(0, 0, 0, 1)
+
+	delegate.Styles.SelectedDesc = delegate.Styles.SelectedTitle.
+		Foreground(styles.SelectedTitleColor)
+
+	l := list.New(items, delegate, defaultWidth, height)
 	l.Title = fmt.Sprintf("\n%s", title)
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(true)
