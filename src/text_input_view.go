@@ -20,6 +20,7 @@ type textInputViewModel struct {
 	endValue  *string
 	quitting  bool
 	styles    *Styles
+	errors    bool
 }
 
 func TextFieldViewModel(question, placeHolder string, value *string) textInputViewModel {
@@ -50,7 +51,14 @@ func (m textInputViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			*m.endValue = m.textInput.Value()
+			v := m.textInput.Value()
+
+			if v == "" {
+				m.errors = true
+				return m, cmd
+			}
+
+			*m.endValue = v
 			m.quitting = true
 			return m, tea.Quit
 
@@ -73,10 +81,15 @@ func (m textInputViewModel) View() string {
 		return ""
 	}
 
+	inputField := m.styles.InputField.Render(m.textInput.View())
+	if m.errors {
+		inputField = m.styles.InputFieldWithError.Render(m.textInput.View())
+	}
+
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
 		m.styles.TitleStyle.Render(fmt.Sprintf("\n%s\n", m.question)),
-		m.styles.InputField.Render(m.textInput.View()),
+		inputField,
 		m.styles.FooterStyle.Render("\n(ctrl+c or esc to quit)"),
 	)
 }

@@ -10,9 +10,10 @@ type Styles struct {
 	TitleColor         lipgloss.Color
 	SelectedTitleColor lipgloss.Color
 
-	InputField  lipgloss.Style
-	FooterStyle lipgloss.Style
-	TitleStyle  lipgloss.Style
+	FooterStyle         lipgloss.Style
+	TitleStyle          lipgloss.Style
+	InputField          lipgloss.Style
+	InputFieldWithError lipgloss.Style
 
 	PeachColor      lipgloss.Color
 	CoralColor      lipgloss.Color
@@ -40,6 +41,7 @@ func DefaultStyles() *Styles {
 	s.SelectedTitleColor = s.OrchidColor
 
 	s.InputField = lipgloss.NewStyle().BorderForeground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
+	s.InputFieldWithError = lipgloss.NewStyle().BorderForeground(s.ErrorColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
 	s.FooterStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(s.FooterColor).Italic(true)
 	s.TitleStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(s.TitleColor).Bold(true)
 	return s
