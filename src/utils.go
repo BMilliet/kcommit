@@ -83,3 +83,16 @@ func ValidateInput(v string) {
 		os.Exit(0)
 	}
 }
+
+func HandleError(err error, message string) {
+	if err != nil {
+		msg := fmt.Sprintf(message+" -> ", err)
+		ExitWithError(msg)
+	}
+}
+
+func ExitWithError(message string) {
+	s := DefaultStyles()
+	println((s.Text(message, s.ErrorColor)))
+	os.Exit(1)
+}

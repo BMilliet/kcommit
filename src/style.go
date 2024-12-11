@@ -14,11 +14,13 @@ type Styles struct {
 	FooterStyle lipgloss.Style
 	TitleStyle  lipgloss.Style
 
-	PeachColor   lipgloss.Color
-	CoralColor   lipgloss.Color
-	OrchidColor  lipgloss.Color
-	ThistleColor lipgloss.Color
-	NyanzaColor  lipgloss.Color
+	PeachColor      lipgloss.Color
+	CoralColor      lipgloss.Color
+	OrchidColor     lipgloss.Color
+	ThistleColor    lipgloss.Color
+	NyanzaColor     lipgloss.Color
+	AquamarineColor lipgloss.Color
+	ErrorColor      lipgloss.Color
 }
 
 func DefaultStyles() *Styles {
@@ -29,6 +31,8 @@ func DefaultStyles() *Styles {
 	s.OrchidColor = lipgloss.Color("#E3B5BF")
 	s.ThistleColor = lipgloss.Color("#DAC3E9")
 	s.NyanzaColor = lipgloss.Color("#E9F2D0")
+	s.ErrorColor = lipgloss.Color("#FF99B8")
+	s.AquamarineColor = lipgloss.Color("#B4F8D5")
 
 	s.BorderColor = s.OrchidColor
 	s.FooterColor = s.NyanzaColor

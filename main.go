@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"kcommit/src"
@@ -10,10 +9,13 @@ import (
 
 func main() {
 
+	rules := src.DefaultRules()
+	styles := src.DefaultStyles()
+
 	// Check if current dir has .git
 	// This is the return early error.
 	if !src.HasGitDirectory() {
-		log.Fatal("Current directory is not a git repository")
+		src.ExitWithError("Current directory is not a git repository")
 	}
 
 	// Init and setup
@@ -25,7 +27,7 @@ func main() {
 
 	fileManager, err := src.NewFileManager()
 	if err != nil {
-		log.Fatalf("Failed to initialize FileManager: %v", err)
+		src.HandleError(err, "Failed to initialize FileManager")
 	}
 
 	fileManager.BasicSetup()
@@ -35,24 +37,21 @@ func main() {
 	// In case current project does not have .kcommitrc it should use a default config (DefaultRules)
 	// More about kcommitrc on README.md.
 
-	rules := src.DefaultRules()
-	styles := src.DefaultStyles()
-
 	hasCustomConfig, err := fileManager.CheckIfPathExists(src.KcommitRcFileName)
 	if err != nil {
-		log.Fatal(err)
+		src.HandleError(err, "Failed load kcommitrc")
 	}
 
 	if hasCustomConfig {
 
 		customConfigStr, err := fileManager.ReadFileContent(src.KcommitRcFileName)
 		if err != nil {
-			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
+			src.HandleError(err, "Failed to read .kcommitrc. Check if the formmat ir correct")
 		}
 
 		customRules, err := src.ParseJSONContent[src.CommitRules](customConfigStr)
 		if err != nil {
-			log.Fatalf("Failed to read .kcommitrc. Check if the formmat ir correct: %v", err)
+			src.HandleError(err, "Failed to parse .kcommitrc")
 		}
 
 		rules = customRules
@@ -65,12 +64,12 @@ func main() {
 
 	currentProjName, err := src.GetCurrentDirectoryName()
 	if err != nil {
-		log.Fatal(err)
+		src.HandleError(err, "Failed to read current dir name")
 	}
 
 	currentBranchName, err := src.GetCurrentBranch()
 	if err != nil {
-		log.Fatal(err)
+		src.HandleError(err, "Failed to get current branch")
 	}
 
 	// Get the history content. If it's empty just set a basic structure.
@@ -80,7 +79,7 @@ func main() {
 
 	historyStr, err := fileManager.GetHistoryContent()
 	if err != nil {
-		log.Fatalf("Failed to read kcommit history: %v", err)
+		src.HandleError(err, "Failed to read kcommit history")
 	}
 
 	historyObj := &src.HistoryDTO{
@@ -101,7 +100,7 @@ func main() {
 	if !(historyStr == "") {
 		h, err := src.ParseJSONContent[src.HistoryDTO](historyStr)
 		if err != nil {
-			log.Fatalf("Failed parsing history: %v", err)
+			src.HandleError(err, "Failed to parse kcommit_history")
 		}
 		historyObj = h
 	}
@@ -116,7 +115,7 @@ func main() {
 
 	branchData, err := history.FindBranchData(currentProjName, currentBranchName)
 	if err != nil {
-		log.Fatalf("Failed to locate project data: %v", err)
+		src.HandleError(err, "Failed to locate project data")
 	}
 
 	// Define scope for this branch in case it's empty
@@ -193,11 +192,11 @@ func main() {
 	if answer == "commit" {
 		msg, err := src.GitCommit(commitMsg)
 		if err != nil {
-			log.Fatalf("Failed to git commit: %v", err)
+			src.HandleError(err, "Failed git commit")
 		}
-		println(styles.Text(msg, styles.PeachColor))
+		println(styles.Text(msg, styles.AquamarineColor))
 	} else {
-		println(styles.Text(commitMsg, styles.PeachColor))
+		println(styles.Text(commitMsg, styles.AquamarineColor))
 	}
 
 	// Clean cache.
@@ -207,7 +206,7 @@ func main() {
 
 	h, err := history.ToJson()
 	if err != nil {
-		log.Fatalf("Failed to write history.json: %v", err)
+		src.HandleError(err, "Failed to write history.json")
 	}
 
 	fileManager.WriteHistoryContent(h)
