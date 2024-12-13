@@ -145,8 +145,7 @@ func (r *Runner) Start() {
 		if answer == "branch" {
 			branchData.Scope = currentBranchName
 		} else {
-			newValue := ""
-			TextFieldView("Write a name for the scope", "", &newValue)
+			newValue := r.viewBuilder.NewTextFieldView("Write a name for the scope", "")
 			r.utils.ValidateInput(newValue)
 			branchData.Scope = newValue
 		}
@@ -165,8 +164,7 @@ func (r *Runner) Start() {
 
 	// Write commit message
 
-	commitDescription := ""
-	TextFieldView("Write the commit message", "", &commitDescription)
+	commitDescription := r.viewBuilder.NewTextFieldView("Write the commit message", "")
 	r.utils.ValidateInput(commitDescription)
 
 	// Build commit message
