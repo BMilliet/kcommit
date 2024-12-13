@@ -305,6 +305,39 @@ func TestGitMock(t *testing.T) {
 	}
 }
 
+func TestViewBuilderMock(t *testing.T) {
+	mock := testresources.ViewBuilderMock{
+		NewListViewReturnValue:      "newList",
+		NewTextFieldViewReturnValue: "newTextField",
+	}
+
+	l := []src.ListItem{}
+
+	resp := mock.NewListView("", l, 0)
+
+	if resp != "newList" {
+		t.Errorf("ViewBuilderMock NewListView failed")
+		return
+	}
+
+	if mock.NewListViewCalled != 1 {
+		t.Errorf("ViewBuilderMock NewListView failed")
+		return
+	}
+
+	resp = mock.NewTextFieldView("", "")
+
+	if resp != "newTextField" {
+		t.Errorf("ViewBuilderMock NewTextFieldView failed")
+		return
+	}
+
+	if mock.NewTextFieldViewCalled != 1 {
+		t.Errorf("ViewBuilderMock NewTextFieldView failed")
+		return
+	}
+}
+
 func TestRunnerHappyPath(t *testing.T) {
 	fileManager := testresources.FileManagerMock{}
 
