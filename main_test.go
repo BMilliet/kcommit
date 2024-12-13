@@ -208,7 +208,7 @@ func TestFileManagerMock(t *testing.T) {
 		return
 	}
 
-	if !(mock.CheckIfPathExistsCalled == 1) {
+	if !(mock.CheckIfPathExistsCalled == 3) {
 		t.Errorf("TestFileManagerMock CheckIfPathExistsCalled failed")
 		return
 	}
@@ -314,7 +314,9 @@ func TestRunnerHappyPath(t *testing.T) {
 		IsGitRepositoryReturnValue: true,
 	}
 
-	r := src.NewRunner(&fileManager, &git, &utils)
+	viewBuilder := testresources.ViewBuilderMock{}
+
+	r := src.NewRunner(&fileManager, &git, &utils, &viewBuilder)
 	r.Start()
 
 	if !(git.IsGitRepositoryCalled == 1) {
