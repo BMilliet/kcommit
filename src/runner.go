@@ -9,13 +9,15 @@ type Runner struct {
 	fileManager FileManagerInterface
 	git         GitInterface
 	utils       UtilsInterface
+	viewBuilder ViewBuilderInterface
 }
 
-func NewRunner(fm FileManagerInterface, g GitInterface, u UtilsInterface) *Runner {
+func NewRunner(fm FileManagerInterface, g GitInterface, u UtilsInterface, b ViewBuilderInterface) *Runner {
 	return &Runner{
 		fileManager: fm,
 		git:         g,
 		utils:       u,
+		viewBuilder: b,
 	}
 }
 
@@ -137,8 +139,7 @@ func (r *Runner) Start() {
 			},
 		}
 
-		answer := ""
-		ListView("This branch does not have scope defined yet.", choices, 16, &answer)
+		answer := r.viewBuilder.NewListView("This branch does not have scope defined yet.", choices, 16)
 		r.utils.ValidateInput(answer)
 
 		if answer == "branch" {
@@ -159,8 +160,7 @@ func (r *Runner) Start() {
 	// Choose commit type
 
 	commitTypeOptions := r.utils.CommitTypesToListItems(rules.CommitTypes)
-	selectCommitType := ""
-	ListView("Please choose a commit type", commitTypeOptions, 32, &selectCommitType)
+	selectCommitType := r.viewBuilder.NewListView("Please choose a commit type", commitTypeOptions, 32)
 	r.utils.ValidateInput(selectCommitType)
 
 	// Write commit message
@@ -191,8 +191,7 @@ func (r *Runner) Start() {
 		},
 	}
 
-	answer := ""
-	ListView("This branch does not have scope defined yet.", choices, 16, &answer)
+	answer := r.viewBuilder.NewListView("This branch does not have scope defined yet.", choices, 16)
 	r.utils.ValidateInput(answer)
 
 	if answer == "commit" {

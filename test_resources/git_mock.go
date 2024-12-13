@@ -2,27 +2,27 @@ package testresources
 
 type GitMock struct {
 	GetCurrentBranchReturnValue string
-	GetCurrentBranchCalled      bool
+	GetCurrentBranchCalled      int
 
 	GitCommitReturnValue string
-	GitCommitCalled      bool
+	GitCommitCalled      int
 
 	IsGitRepositoryReturnValue bool
-	IsGitRepositoryCalled      bool
+	IsGitRepositoryCalled      int
 }
 
 func (g *GitMock) GetCurrentBranch() (string, error) {
-	g.GetCurrentBranchCalled = true
+	g.GetCurrentBranchCalled += 1
 	return g.GetCurrentBranchReturnValue, nil
 }
 
 func (g *GitMock) GitCommit(msg string) (string, error) {
-	g.GitCommitCalled = true
+	g.GitCommitCalled += 1
 	g.GitCommitReturnValue = msg
 	return g.GitCommitReturnValue, nil
 }
 
 func (g *GitMock) IsGitRepository() bool {
-	g.IsGitRepositoryCalled = true
+	g.IsGitRepositoryCalled += 1
 	return g.IsGitRepositoryReturnValue
 }

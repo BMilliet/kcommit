@@ -8,26 +8,26 @@ import (
 type FileManagerMock struct {
 	CheckIfPathExistsReturns    map[string]interface{}
 	CheckIfPathExistsCalledWith []string
-	CheckIfPathExistsCalled     bool
+	CheckIfPathExistsCalled     int
 
 	ReadFileContentReturns     map[string]interface{}
 	ReadFileContentCalleddWith []string
-	ReadFileContentCalled      bool
+	ReadFileContentCalled      int
 
 	GetHistoryContentReturns string
-	GetHistoryContentCalled  bool
+	GetHistoryContentCalled  int
 
 	WriteHistoryContentWrittenContent string
 
 	BasicSetupReturnValue error
-	BasicSetupCalled      bool
+	BasicSetupCalled      int
 
 	GetCurrentDirectoryNameReturnValue string
-	GetCurrentDirectoryNameCalled      bool
+	GetCurrentDirectoryNameCalled      int
 }
 
 func (m *FileManagerMock) CheckIfPathExists(path string) (bool, error) {
-	m.CheckIfPathExistsCalled = true
+	m.CheckIfPathExistsCalled += 1
 	m.CheckIfPathExistsCalledWith = append(m.CheckIfPathExistsCalledWith, path)
 
 	if result, exists := m.CheckIfPathExistsReturns[path]; exists {
@@ -43,7 +43,7 @@ func (m *FileManagerMock) CheckIfPathExists(path string) (bool, error) {
 }
 
 func (m *FileManagerMock) ReadFileContent(filePath string) (string, error) {
-	m.ReadFileContentCalled = true
+	m.ReadFileContentCalled += 1
 	m.ReadFileContentCalleddWith = append(m.ReadFileContentCalleddWith, filePath)
 
 	if result, exists := m.ReadFileContentReturns[filePath]; exists {
@@ -59,7 +59,7 @@ func (m *FileManagerMock) ReadFileContent(filePath string) (string, error) {
 }
 
 func (m *FileManagerMock) GetHistoryContent() (string, error) {
-	m.GetHistoryContentCalled = true
+	m.GetHistoryContentCalled += 1
 	return m.GetHistoryContentReturns, nil
 }
 
@@ -69,11 +69,11 @@ func (m *FileManagerMock) WriteHistoryContent(content string) error {
 }
 
 func (m *FileManagerMock) BasicSetup() error {
-	m.BasicSetupCalled = true
+	m.BasicSetupCalled += 1
 	return m.BasicSetupReturnValue
 }
 
 func (m *FileManagerMock) GetCurrentDirectoryName() (string, error) {
-	m.GetCurrentDirectoryNameCalled = true
+	m.GetCurrentDirectoryNameCalled += 1
 	return m.GetCurrentDirectoryNameReturnValue, nil
 }

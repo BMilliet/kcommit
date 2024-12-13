@@ -13,8 +13,9 @@ func main() {
 
 	git := src.NewGit()
 	utils := src.NewUtils()
+	viewBuilder := src.NewViewBuilder()
 
-	runner := src.NewRunner(fileManager, git, utils)
+	runner := src.NewRunner(fileManager, git, utils, viewBuilder)
 
 	runner.Start()
 }

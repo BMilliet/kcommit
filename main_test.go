@@ -208,7 +208,7 @@ func TestFileManagerMock(t *testing.T) {
 		return
 	}
 
-	if !mock.CheckIfPathExistsCalled {
+	if !(mock.CheckIfPathExistsCalled == 1) {
 		t.Errorf("TestFileManagerMock CheckIfPathExistsCalled failed")
 		return
 	}
@@ -224,7 +224,7 @@ func TestFileManagerMock(t *testing.T) {
 		return
 	}
 
-	if !mock.ReadFileContentCalled {
+	if !(mock.ReadFileContentCalled == 1) {
 		t.Errorf("TestFileManagerMock ReadFileContent failed")
 		return
 	}
@@ -249,7 +249,7 @@ func TestFileManagerMock(t *testing.T) {
 
 	mock.BasicSetup()
 
-	if !mock.BasicSetupCalled {
+	if !(mock.BasicSetupCalled == 1) {
 		t.Errorf("TestFileManagerMock BasicSetup failed")
 		return
 	}
@@ -273,7 +273,7 @@ func TestGitMock(t *testing.T) {
 		return
 	}
 
-	if !mock.GetCurrentBranchCalled {
+	if !(mock.GetCurrentBranchCalled == 1) {
 		t.Errorf("TestGitMock GetCurrentBranchReturnValue failed")
 		return
 	}
@@ -294,13 +294,31 @@ func TestGitMock(t *testing.T) {
 		return
 	}
 
-	if !mock.GitCommitCalled {
+	if !(mock.GitCommitCalled == 1) {
 		t.Errorf("TestGitMock GitCommit failed")
 		return
 	}
 
 	if !mock.IsGitRepository() {
 		t.Errorf("TestGitMock IsGitRepository failed")
+		return
+	}
+}
+
+func TestRunnerHappyPath(t *testing.T) {
+	fileManager := testresources.FileManagerMock{}
+
+	utils := testresources.UtilsMock{}
+
+	git := testresources.GitMock{
+		IsGitRepositoryReturnValue: true,
+	}
+
+	r := src.NewRunner(&fileManager, &git, &utils)
+	r.Start()
+
+	if !(git.IsGitRepositoryCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
 		return
 	}
 }
