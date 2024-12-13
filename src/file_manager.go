@@ -6,6 +6,15 @@ import (
 	"path/filepath"
 )
 
+type FileManagerInterface interface {
+	CheckIfPathExists(path string) (bool, error)
+	ReadFileContent(filePath string) (string, error)
+	GetHistoryContent() (string, error)
+	WriteHistoryContent(content string) error
+	BasicSetup() error
+	GetCurrentDirectoryName() (string, error)
+}
+
 type FileManager struct {
 	HomeDir        string
 	KcommitDir     string
@@ -111,4 +120,13 @@ func (m *FileManager) BasicSetup() error {
 	}
 
 	return nil
+}
+
+func (m *FileManager) GetCurrentDirectoryName() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("GetCurrentDirectoryName -> %v", err)
+	}
+
+	return filepath.Base(dir), nil
 }
