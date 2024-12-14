@@ -9,11 +9,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var (
-	paginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
-	helpStyle       = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
-)
-
 type ListItem struct {
 	T, D string
 }
@@ -88,12 +83,7 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 
 	delegate := list.NewDefaultDelegate()
 
-	delegate.Styles.SelectedTitle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder(), false, false, false, true).
-		BorderForeground(styles.SelectedTitleColor).
-		Foreground(styles.SelectedTitleColor).
-		Padding(0, 0, 0, 1)
-
+	delegate.Styles.SelectedTitle = styles.SelectedItemStyle
 	delegate.Styles.SelectedDesc = delegate.Styles.SelectedTitle.
 		Foreground(styles.SelectedTitleColor)
 
@@ -103,8 +93,8 @@ func ListView(title string, op []ListItem, height int, endValue *string) {
 	l.SetFilteringEnabled(true)
 	l.Styles.Title = styles.TitleStyle
 	l.Styles.Title.Align(lipgloss.Left)
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
+	l.Styles.PaginationStyle = styles.PaginationStyle
+	l.Styles.HelpStyle = styles.HelpStyle
 
 	m := ListViewModel{list: l, endValue: endValue, selected: "", styles: *styles}
 

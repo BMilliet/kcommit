@@ -7,7 +7,7 @@ import (
 )
 
 type UtilsInterface interface {
-	CommitTypesToListItems(commitTypes []CommitType) []ListItem
+	CommitTypeDTOsToListItems(commitTypes []CommitTypeDTO) []ListItem
 	ValidateInput(v string)
 	HandleError(err error, message string)
 	ExitWithError(message string)
@@ -19,7 +19,7 @@ func NewUtils() *Utils {
 	return &Utils{}
 }
 
-func (u *Utils) CommitTypesToListItems(commitTypes []CommitType) []ListItem {
+func (u *Utils) CommitTypeDTOsToListItems(commitTypes []CommitTypeDTO) []ListItem {
 	var listItems []ListItem
 	for _, commitType := range commitTypes {
 		listItems = append(listItems, ListItem{

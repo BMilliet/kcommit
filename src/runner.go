@@ -57,7 +57,7 @@ func (r *Runner) Start() {
 			r.utils.HandleError(err, "Failed to read .kcommitrc. Check if the formmat ir correct")
 		}
 
-		customRules, err := ParseJSONContent[CommitRules](customConfigStr)
+		customRules, err := ParseJSONContent[CommitRulesDTO](customConfigStr)
 		if err != nil {
 			r.utils.HandleError(err, "Failed to parse .kcommitrc")
 		}
@@ -91,10 +91,10 @@ func (r *Runner) Start() {
 	}
 
 	historyObj := &HistoryDTO{
-		Projects: []ProjectModel{
+		Projects: []ProjectDTO{
 			{
 				Name: currentProjName,
-				Branches: []BranchModel{
+				Branches: []BranchDTO{
 					{
 						Name:      currentBranchName,
 						Scope:     "",
@@ -113,7 +113,7 @@ func (r *Runner) Start() {
 		historyObj = h
 	}
 
-	history := CreateHistoryModelFromDTO(historyObj)
+	history := historyObj.ToModel()
 
 	// Check history has project/branch.
 	// Add project/branch to current history if needed.
@@ -158,7 +158,7 @@ func (r *Runner) Start() {
 
 	// Choose commit type
 
-	commitTypeOptions := r.utils.CommitTypesToListItems(rules.CommitTypes)
+	commitTypeOptions := r.utils.CommitTypeDTOsToListItems(rules.CommitTypeDTOs)
 	selectCommitType := r.viewBuilder.NewListView("Please choose a commit type", commitTypeOptions, 32)
 	r.utils.ValidateInput(selectCommitType)
 
@@ -203,7 +203,7 @@ func (r *Runner) Start() {
 	}
 
 	// Clean cache.
-	history.CleanOldBranches()
+	history.CleanOldBranches(time.Now())
 
 	// Save history
 
