@@ -12,7 +12,7 @@ type HistoryModel struct {
 
 type BranchDetail struct {
 	Scope     string    `json:"scope"`
-	UpdatedAt time.Time `json:"created"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (h *HistoryModel) hasProject(projectName string) bool {
@@ -112,7 +112,7 @@ type ProjectModel struct {
 type BranchModel struct {
 	Name      string    `json:"name"`
 	Scope     string    `json:"scope"`
-	UpdatedAt time.Time `json:"created"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CommitType struct {
@@ -122,59 +122,6 @@ type CommitType struct {
 
 type CommitRules struct {
 	CommitTypes []CommitType `json:"commitTypes"`
-}
-
-func DefaultRules() *CommitRules {
-	l := []CommitType{
-		{
-			Type:        "feat",
-			Description: "Adds a new feature to the project.",
-		},
-		{
-			Type:        "fix",
-			Description: "Fixes a bug in the code.",
-		},
-		{
-			Type:        "chore",
-			Description: "Auxiliary tasks, such as dependency updates or configuration changes.",
-		},
-		{
-			Type:        "style",
-			Description: "Changes that do not affect functionality (e.g., formatting, whitespace).",
-		},
-		{
-			Type:        "refactor",
-			Description: "Refactors code without changing existing functionality.",
-		},
-		{
-			Type:        "test",
-			Description: "Adds or updates automated tests.",
-		},
-		{
-			Type:        "build",
-			Description: "Changes related to the build system or external dependencies.",
-		},
-		{
-			Type:        "revert",
-			Description: "Reverts a previous commit.",
-		},
-		{
-			Type:        "perf",
-			Description: "Performance improvements in the code.",
-		},
-		{
-			Type:        "ci",
-			Description: "Changes to the continuous integration configuration.",
-		},
-		{
-			Type:        "docs",
-			Description: "Updates documentation only, without changing the code.",
-		},
-	}
-
-	return &CommitRules{
-		CommitTypes: l,
-	}
 }
 
 func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
