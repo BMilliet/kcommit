@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type HistoryModel struct {
+type History struct {
 	Projects map[string]map[string]BranchDetail `json:"projects"`
 }
 
@@ -15,12 +15,12 @@ type BranchDetail struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (h *HistoryModel) hasProject(projectName string) bool {
+func (h *History) hasProject(projectName string) bool {
 	_, projectExists := h.Projects[projectName]
 	return projectExists
 }
 
-func (h *HistoryModel) HasBranch(projectName string, branchName string) bool {
+func (h *History) HasBranch(projectName string, branchName string) bool {
 	projectBranches, projectExists := h.Projects[projectName]
 	if !projectExists {
 		return false
@@ -29,7 +29,7 @@ func (h *HistoryModel) HasBranch(projectName string, branchName string) bool {
 	return branchExists
 }
 
-func (h *HistoryModel) FindBranchData(projectName string, branchName string) (*BranchDetail, error) {
+func (h *History) FindBranchData(projectName string, branchName string) (*BranchDetail, error) {
 	if !h.hasProject(projectName) {
 		return nil, fmt.Errorf("FindBranchData -> %s", projectName)
 	}
@@ -42,17 +42,17 @@ func (h *HistoryModel) FindBranchData(projectName string, branchName string) (*B
 	return &branch, nil
 }
 
-func (h *HistoryModel) SetBranch(projectName string, branchName string, scope string) {
+func (h *History) SetBranch(projectName string, branchName string, scope string) {
 	h.Projects[projectName][branchName] = BranchDetail{Scope: scope, UpdatedAt: time.Now()}
 }
 
-func (h *HistoryModel) addProject(projectName string) {
+func (h *History) addProject(projectName string) {
 	if !h.hasProject(projectName) {
 		h.Projects[projectName] = make(map[string]BranchDetail)
 	}
 }
 
-func (h *HistoryModel) AddBranch(projectName, branchName string) error {
+func (h *History) AddBranch(projectName, branchName string) error {
 	if !h.hasProject(projectName) {
 		h.addProject(projectName)
 	}
@@ -65,9 +65,9 @@ func (h *HistoryModel) AddBranch(projectName, branchName string) error {
 	return nil
 }
 
-func (h *HistoryModel) ToJson() (string, error) {
-	data := map[string][]ProjectModel{
-		"projects": h.ToProjectModel(),
+func (h *History) ToJson() (string, error) {
+	data := map[string][]ProjectDTO{
+		"projects": h.ToProjectDTO(),
 	}
 
 	jsonBytes, err := json.MarshalIndent(data, "", "  ")
@@ -77,17 +77,17 @@ func (h *HistoryModel) ToJson() (string, error) {
 	return string(jsonBytes), nil
 }
 
-func (h *HistoryModel) ToProjectModel() []ProjectModel {
-	var projects []ProjectModel
+func (h *History) ToProjectDTO() []ProjectDTO {
+	var projects []ProjectDTO
 
 	for projectName, branches := range h.Projects {
-		project := ProjectModel{
+		project := ProjectDTO{
 			Name:     projectName,
-			Branches: []BranchModel{},
+			Branches: []BranchDTO{},
 		}
 
 		for branchName, branchDetail := range branches {
-			project.Branches = append(project.Branches, BranchModel{
+			project.Branches = append(project.Branches, BranchDTO{
 				Name:      branchName,
 				Scope:     branchDetail.Scope,
 				UpdatedAt: branchDetail.UpdatedAt,
@@ -100,52 +100,7 @@ func (h *HistoryModel) ToProjectModel() []ProjectModel {
 	return projects
 }
 
-type HistoryDTO struct {
-	Projects []ProjectModel `json:"projects"`
-}
-
-type ProjectModel struct {
-	Name     string        `json:"name"`
-	Branches []BranchModel `json:"branches"`
-}
-
-type BranchModel struct {
-	Name      string    `json:"name"`
-	Scope     string    `json:"scope"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-type CommitType struct {
-	Type        string `json:"type"`
-	Description string `json:"description"`
-}
-
-type CommitRules struct {
-	CommitTypes []CommitType `json:"commitTypes"`
-}
-
-func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
-	history := HistoryModel{
-		Projects: make(map[string]map[string]BranchDetail),
-	}
-
-	for _, project := range dto.Projects {
-		projectBranches := make(map[string]BranchDetail)
-
-		for _, branch := range project.Branches {
-			projectBranches[branch.Name] = BranchDetail{
-				Scope:     branch.Scope,
-				UpdatedAt: branch.UpdatedAt,
-			}
-		}
-
-		history.Projects[project.Name] = projectBranches
-	}
-
-	return history
-}
-
-func (h *HistoryModel) CleanOldBranches(currentTime time.Time) {
+func (h *History) CleanOldBranches(currentTime time.Time) {
 	oneMonthAgo := currentTime.AddDate(0, -1, 0)
 
 	for project, branches := range h.Projects {

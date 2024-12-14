@@ -11,11 +11,11 @@ import (
 
 func TestHistoryModel(t *testing.T) {
 	dto := src.HistoryDTO{
-		Projects: []src.ProjectModel{
+		Projects: []src.ProjectDTO{
 
 			{
 				Name: "Project 1",
-				Branches: []src.BranchModel{
+				Branches: []src.BranchDTO{
 					{
 						Name:  "proj_1_branch_1",
 						Scope: "11",
@@ -29,7 +29,7 @@ func TestHistoryModel(t *testing.T) {
 
 			{
 				Name: "Project 2",
-				Branches: []src.BranchModel{
+				Branches: []src.BranchDTO{
 					{
 						Name:  "proj_2_branch_1",
 						Scope: "21",
@@ -43,7 +43,7 @@ func TestHistoryModel(t *testing.T) {
 		},
 	}
 
-	historyModel := src.CreateHistoryModelFromDTO(&dto)
+	historyModel := dto.ToModel()
 
 	if len(historyModel.Projects) != 2 {
 		t.Errorf("expected 2 projects, got %d", len(historyModel.Projects))
@@ -362,13 +362,13 @@ func containsSame(list1, list2 []string) bool {
 	return true
 }
 
-func setupHistoryModel(referenceTime time.Time) src.HistoryModel {
+func setupHistoryModel(referenceTime time.Time) src.History {
 	lessThanOneMonthAgo := referenceTime.AddDate(0, 0, -20)
 	oneMonthAgo := referenceTime.AddDate(0, -1, 0)
 	oneMonthAndOneDayAgo := referenceTime.AddDate(0, -1, -1)
 	twoMonthsAgo := referenceTime.AddDate(0, -2, 0)
 
-	return src.HistoryModel{
+	return src.History{
 		Projects: map[string]map[string]src.BranchDetail{
 			"ProjectA": {
 				"Branch1": {Scope: "feature", UpdatedAt: twoMonthsAgo},
@@ -388,7 +388,7 @@ func setupHistoryModel(referenceTime time.Time) src.HistoryModel {
 	}
 }
 
-func assertBranchExists(t *testing.T, history src.HistoryModel, project, branch string, shouldExist bool) {
+func assertBranchExists(t *testing.T, history src.History, project, branch string, shouldExist bool) {
 	_, err := history.FindBranchData(project, branch)
 	if shouldExist && err != nil {
 		t.Errorf("Branch %s/%s should exist.", project, branch)

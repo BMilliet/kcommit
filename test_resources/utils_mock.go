@@ -10,7 +10,7 @@ type UtilsMock struct {
 	ExitWithErrorCalledWith   string
 }
 
-func (u *UtilsMock) CommitTypesToListItems(commitTypes []src.CommitType) []src.ListItem {
+func (u *UtilsMock) CommitTypeDTOsToListItems(commitTypes []src.CommitTypeDTO) []src.ListItem {
 	var listItems []src.ListItem
 	for _, commitType := range commitTypes {
 		listItems = append(listItems, src.ListItem{

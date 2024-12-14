@@ -1,7 +1,7 @@
 package src
 
-func DefaultRules() *CommitRules {
-	l := []CommitType{
+func DefaultRules() *CommitRulesDTO {
+	l := []CommitTypeDTO{
 		{
 			Type:        "feat",
 			Description: "Adds a new feature to the project.",
@@ -48,7 +48,7 @@ func DefaultRules() *CommitRules {
 		},
 	}
 
-	return &CommitRules{
-		CommitTypes: l,
+	return &CommitRulesDTO{
+		CommitTypeDTOs: l,
 	}
 }
