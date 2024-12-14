@@ -127,120 +127,28 @@ func TestHistoryModel(t *testing.T) {
 
 func TestCleanOldBranches(t *testing.T) {
 	referenceTime := time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC)
-	lessThanOneMonthAgo := referenceTime.AddDate(0, 0, -20)
-	oneMonthAndOneDayAgo := referenceTime.AddDate(0, -1, -1)
-	oneMonthAgo := referenceTime.AddDate(0, -1, 0)
-	twoMonthsAgo := referenceTime.AddDate(0, -2, 0)
-
-	history := src.HistoryModel{
-		Projects: map[string]map[string]src.BranchDetail{
-			"ProjectA": {
-				"Branch1": {Scope: "feature", UpdatedAt: twoMonthsAgo},
-				"Branch2": {Scope: "bugfix", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectB": {
-				"Branch1": {Scope: "hotfix", UpdatedAt: oneMonthAgo},
-				"Branch2": {Scope: "ui", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectC": {
-				"Branch1": {Scope: "docs", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectD": {
-				"Branch1": {Scope: "tests", UpdatedAt: oneMonthAndOneDayAgo},
-			},
-		},
-	}
+	history := setupHistoryModel(referenceTime)
 
 	history.CleanOldBranches(referenceTime)
 
-	_, err := history.FindBranchData("ProjectA", "Branch2")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectB", "Branch2")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectC", "Branch1")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectD", "Branch1")
-	if err == nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectA", "Branch1")
-	if err == nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
+	assertBranchExists(t, history, "ProjectA", "Branch2", true)
+	assertBranchExists(t, history, "ProjectB", "Branch2", true)
+	assertBranchExists(t, history, "ProjectC", "Branch1", true)
+	assertBranchExists(t, history, "ProjectD", "Branch1", false)
+	assertBranchExists(t, history, "ProjectA", "Branch1", false)
 }
 
 func TestCleanOldBranchesYear(t *testing.T) {
 	referenceTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-	lessThanOneMonthAgo := referenceTime.AddDate(0, 0, -20)
-	oneMonthAgo := referenceTime.AddDate(0, -1, 0)
-	oneMonthAndOneDayAgo := referenceTime.AddDate(0, -1, -1)
-	twoMonthsAgo := referenceTime.AddDate(0, -2, 0)
-
-	history := src.HistoryModel{
-		Projects: map[string]map[string]src.BranchDetail{
-			"ProjectA": {
-				"Branch1": {Scope: "feature", UpdatedAt: twoMonthsAgo},
-				"Branch2": {Scope: "bugfix", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectB": {
-				"Branch1": {Scope: "hotfix", UpdatedAt: oneMonthAgo},
-				"Branch2": {Scope: "ui", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectC": {
-				"Branch1": {Scope: "docs", UpdatedAt: lessThanOneMonthAgo},
-			},
-			"ProjectD": {
-				"Branch1": {Scope: "tests", UpdatedAt: oneMonthAndOneDayAgo},
-			},
-		},
-	}
+	history := setupHistoryModel(referenceTime)
 
 	history.CleanOldBranches(referenceTime)
 
-	_, err := history.FindBranchData("ProjectA", "Branch2")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectB", "Branch2")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectC", "Branch1")
-	if err != nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectD", "Branch1")
-	if err == nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
-
-	_, err = history.FindBranchData("ProjectA", "Branch1")
-	if err == nil {
-		t.Errorf("FindBranchData() returned an unexpected error")
-		return
-	}
+	assertBranchExists(t, history, "ProjectA", "Branch2", true)
+	assertBranchExists(t, history, "ProjectB", "Branch2", true)
+	assertBranchExists(t, history, "ProjectC", "Branch1", true)
+	assertBranchExists(t, history, "ProjectD", "Branch1", false)
+	assertBranchExists(t, history, "ProjectA", "Branch1", false)
 }
 
 // --- Test mocks ---
@@ -452,4 +360,39 @@ func containsSame(list1, list2 []string) bool {
 	}
 
 	return true
+}
+
+func setupHistoryModel(referenceTime time.Time) src.HistoryModel {
+	lessThanOneMonthAgo := referenceTime.AddDate(0, 0, -20)
+	oneMonthAgo := referenceTime.AddDate(0, -1, 0)
+	oneMonthAndOneDayAgo := referenceTime.AddDate(0, -1, -1)
+	twoMonthsAgo := referenceTime.AddDate(0, -2, 0)
+
+	return src.HistoryModel{
+		Projects: map[string]map[string]src.BranchDetail{
+			"ProjectA": {
+				"Branch1": {Scope: "feature", UpdatedAt: twoMonthsAgo},
+				"Branch2": {Scope: "bugfix", UpdatedAt: lessThanOneMonthAgo},
+			},
+			"ProjectB": {
+				"Branch1": {Scope: "hotfix", UpdatedAt: oneMonthAgo},
+				"Branch2": {Scope: "ui", UpdatedAt: lessThanOneMonthAgo},
+			},
+			"ProjectC": {
+				"Branch1": {Scope: "docs", UpdatedAt: lessThanOneMonthAgo},
+			},
+			"ProjectD": {
+				"Branch1": {Scope: "tests", UpdatedAt: oneMonthAndOneDayAgo},
+			},
+		},
+	}
+}
+
+func assertBranchExists(t *testing.T, history src.HistoryModel, project, branch string, shouldExist bool) {
+	_, err := history.FindBranchData(project, branch)
+	if shouldExist && err != nil {
+		t.Errorf("Branch %s/%s should exist.", project, branch)
+	} else if !shouldExist && err == nil {
+		t.Errorf("Branch %s/%s should not exist.", project, branch)
+	}
 }
