@@ -339,12 +339,36 @@ func TestViewBuilderMock(t *testing.T) {
 }
 
 func TestRunnerHappyPath(t *testing.T) {
-	fileManager := testresources.FileManagerMock{}
+
+	historyJson := `
+	{
+    "projects": [
+        {
+            "name": "ProjectA",
+            "branches": [
+                {
+                    "name": "main",
+                    "scope": "feature"
+                }
+            ]
+        }
+    ]
+}
+	`
+
+	fileManager := testresources.FileManagerMock{
+		CheckIfPathExistsReturns: map[string]interface{}{
+			".kcommitrc": false,
+		},
+		GetCurrentDirectoryNameReturnValue: "kcommit",
+		GetHistoryContentReturns: historyJson,
+	}
 
 	utils := testresources.UtilsMock{}
 
 	git := testresources.GitMock{
-		IsGitRepositoryReturnValue: true,
+		IsGitRepositoryReturnValue:  true,
+		GetCurrentBranchReturnValue: "main",
 	}
 
 	viewBuilder := testresources.ViewBuilderMock{}
@@ -353,6 +377,36 @@ func TestRunnerHappyPath(t *testing.T) {
 	r.Start()
 
 	if !(git.IsGitRepositoryCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(fileManager.BasicSetupCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(fileManager.CheckIfPathExistsCalledWith[0] == src.KcommitRcFileName) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(git.GetCurrentBranchCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(git.GetCurrentBranchCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(fileManager.GetHistoryContentCalled == 1) {
+		t.Errorf("Runner TestRunnerHappyPath failed")
+		return
+	}
+
+	if !(viewBuilder.NewListViewCalled == 1) {
 		t.Errorf("Runner TestRunnerHappyPath failed")
 		return
 	}
