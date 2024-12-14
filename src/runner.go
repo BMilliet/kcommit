@@ -25,7 +25,7 @@ func (r *Runner) Start() {
 	rules := DefaultRules()
 	styles := DefaultStyles()
 
-	// Check if current dir has .git
+	// Check if current dir has .git (is local repository)
 	// This is the return early error.
 	if !r.git.IsGitRepository() {
 		r.utils.ExitWithError("Current directory is not a git repository")
@@ -115,7 +115,7 @@ func (r *Runner) Start() {
 
 	history := historyObj.ToModel()
 
-	// Check history has project/branch.
+	// Check if history has project/branch.
 	// Add project/branch to current history if needed.
 	if !history.HasBranch(currentProjName, currentBranchName) {
 		history.AddBranch(currentProjName, currentBranchName)
@@ -126,7 +126,7 @@ func (r *Runner) Start() {
 		r.utils.HandleError(err, "Failed to locate project data")
 	}
 
-	// Define scope for this branch in case it's empty
+	// Define scope for current branch in case it's empty
 	if branchData.Scope == "" {
 		choices := []ListItem{
 			{
@@ -152,8 +152,8 @@ func (r *Runner) Start() {
 
 	}
 
-	// This will set the scope to be save and the time it was updated.
-	// Time updated is also used lated to clear out old branches
+	// This will set the scope to be saved and the time it was updated.
+	// Time updated is also used later to clear out old branches
 	history.SetBranch(currentProjName, currentBranchName, branchData.Scope)
 
 	// Choose commit type
@@ -205,7 +205,7 @@ func (r *Runner) Start() {
 	// Clean cache.
 	history.CleanOldBranches(time.Now())
 
-	// Save history
+	// Save cleaned history.
 
 	h, err := history.ToJson()
 	if err != nil {
