@@ -203,7 +203,7 @@ func (r *Runner) Start() {
 	}
 
 	// Clean cache.
-	history.CleanOldBranches()
+	history.CleanOldBranches(time.Now())
 
 	// Save history
 

@@ -145,16 +145,12 @@ func CreateHistoryModelFromDTO(dto *HistoryDTO) HistoryModel {
 	return history
 }
 
-// TODO: this logic needs to be adjusted. Couting just the year means cleaning the cache completely on day 1.
-func (h *HistoryModel) CleanOldBranches() {
-	currentTime := time.Now()
-	currentYear := currentTime.Year()
-
+func (h *HistoryModel) CleanOldBranches(currentTime time.Time) {
 	oneMonthAgo := currentTime.AddDate(0, -1, 0)
 
 	for project, branches := range h.Projects {
 		for branch, details := range branches {
-			if details.UpdatedAt.Before(oneMonthAgo) || details.UpdatedAt.Year() < currentYear {
+			if details.UpdatedAt.Before(oneMonthAgo) {
 				delete(branches, branch)
 			}
 		}
