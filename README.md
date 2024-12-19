@@ -2,14 +2,14 @@
 Git commit generator using Karma commit message style.
 
 
-## Documentation
+## 📝 Documentation
 
 * [How it works](#how-it-works)
 * [Build from source](#build-it-from-source)
 * [Custom config](#kcommit-custom-configs)
 
 
-## How it works
+## ⚙️  How it works
 kcommit simplifies creating commit messages by guiding you through the process. It automatically saves and reuses a `scope` for each project and branch, speeding up future commits.
 
 Scopes are stored in `~/.kcommit/.kcommit_history.json`. kcommit manages this cache by removing unused branches after 1 month.
@@ -21,7 +21,7 @@ The first segment is `the commit-type`. kcommit provides a default list of types
 Finally, kcommit can either print the commit message or commit it for you.
 
 
-## Build it from source
+## 📦 Build from source
 
 Install go on your machine.
 Run:
