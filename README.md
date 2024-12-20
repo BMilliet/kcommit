@@ -23,7 +23,7 @@ Finally, kcommit can either print the commit message or commit it for you.
 First commit on a new branch:
 <img width="800" src="./docs/kcommit_1.gif" />
 
-Next commits on the same branch with scope already saved on cache:
+New commit on the same branch with scope already saved on cache:
 <img width="800" src="./docs/kcommit_2.gif" />
 
 ## 📦 Build from source
