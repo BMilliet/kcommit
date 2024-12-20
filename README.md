@@ -20,6 +20,11 @@ A typical commit message looks like:
 The first segment is `the commit-type`. kcommit provides a default list of types, but you can define custom ones for each project [custom-config](#kcommit-custom-configs).
 Finally, kcommit can either print the commit message or commit it for you.
 
+First commit on a new branch:
+<img width="800" src="./docs/kcommit_1.gif" />
+
+Next commits on the same branch:
+<img width="800" src="./docs/kcommit_2.gif" />
 
 ## 📦 Build from source
 
