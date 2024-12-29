@@ -1,7 +1,7 @@
 package src
 
 const (
-	ExitSignal             = "_quit_kcommit"
+	ExitSignal             = "__quit_kcommit__"
 	KcommitDirName         = ".kcommit"
 	KcommitRcFileName      = ".kcommitrc"
 	KcommitHistoryFileName = ".kcommit_history.json"

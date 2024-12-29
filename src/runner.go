@@ -140,9 +140,9 @@ func (r *Runner) Start() {
 		}
 
 		answer := r.viewBuilder.NewListView("This branch does not have scope defined yet.", choices, 16)
-		r.utils.ValidateInput(answer)
+		r.utils.ValidateInput(answer.T)
 
-		if answer == "branch" {
+		if answer.T == "branch" {
 			branchData.Scope = currentBranchName
 		} else {
 			newValue := r.viewBuilder.NewTextFieldView("Write a name for the scope", "")
@@ -160,7 +160,7 @@ func (r *Runner) Start() {
 
 	commitTypeOptions := r.utils.CommitTypeDTOsToListItems(rules.CommitTypeDTOs)
 	selectCommitType := r.viewBuilder.NewListView("Please choose a commit type", commitTypeOptions, 32)
-	r.utils.ValidateInput(selectCommitType)
+	r.utils.ValidateInput(selectCommitType.T)
 
 	// Write commit message
 
@@ -171,7 +171,7 @@ func (r *Runner) Start() {
 
 	commitMsg := fmt.Sprintf(
 		"%s(%s): %s",
-		selectCommitType,
+		selectCommitType.T,
 		branchData.Scope,
 		commitDescription,
 	)
@@ -190,9 +190,9 @@ func (r *Runner) Start() {
 	}
 
 	answer := r.viewBuilder.NewListView("This branch does not have scope defined yet.", choices, 16)
-	r.utils.ValidateInput(answer)
+	r.utils.ValidateInput(answer.T)
 
-	if answer == "commit" {
+	if answer.T == "commit" {
 		msg, err := r.git.GitCommit(commitMsg)
 		if err != nil {
 			r.utils.HandleError(err, "Failed git commit")

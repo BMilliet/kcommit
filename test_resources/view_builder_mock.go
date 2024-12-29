@@ -11,9 +11,11 @@ type ViewBuilderMock struct {
 	NewTextFieldViewCalled      int
 }
 
-func (b *ViewBuilderMock) NewListView(title string, op []src.ListItem, height int) string {
+func (b *ViewBuilderMock) NewListView(title string, op []src.ListItem, height int) src.ListItem {
 	b.NewListViewCalled += 1
-	return b.NewListViewReturnValue
+	return src.ListItem{
+		T: b.NewListViewReturnValue,
+	}
 }
 
 func (b *ViewBuilderMock) NewTextFieldView(title, placeHolder string) string {

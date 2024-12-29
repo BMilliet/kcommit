@@ -20,7 +20,7 @@ func (i ListItem) FilterValue() string { return i.T }
 type ListViewModel struct {
 	list     list.Model
 	selected string
-	endValue *string
+	endValue *ListItem
 	quitting bool
 	styles   Styles
 }
@@ -42,12 +42,12 @@ func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			i, ok := m.list.SelectedItem().(ListItem)
 			if ok {
-				*m.endValue = string(i.T)
+				*m.endValue = i
 			}
 			return m, tea.Quit
 
 		case "ctrl+c", "esc", "q":
-			*m.endValue = ExitSignal
+			*m.endValue = ListItem{T: ExitSignal}
 			return m, tea.Quit
 		}
 	}
@@ -70,8 +70,7 @@ func (m ListViewModel) View() string {
 	return m.list.View()
 }
 
-func ListView(title string, op []ListItem, height int, endValue *string) {
-
+func ListView(title string, op []ListItem, height int, endValue *ListItem) {
 	items := []list.Item{}
 	for _, o := range op {
 		items = append(items, o)

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"kcommit/src"
-	testresources "kcommit/test_resources"
 	"testing"
 	"time"
+
+	"kcommit/src"
+	testresources "kcommit/test_resources"
 )
 
 // --- Test models ---
@@ -12,7 +13,6 @@ import (
 func TestHistoryModel(t *testing.T) {
 	dto := src.HistoryDTO{
 		Projects: []src.ProjectDTO{
-
 			{
 				Name: "Project 1",
 				Branches: []src.BranchDTO{
@@ -297,7 +297,7 @@ func TestViewBuilderMock(t *testing.T) {
 
 	resp := mock.NewListView("", l, 0)
 
-	if resp != "newList" {
+	if resp.T != "newList" {
 		t.Errorf("ViewBuilderMock NewListView failed")
 		return
 	}
@@ -307,9 +307,9 @@ func TestViewBuilderMock(t *testing.T) {
 		return
 	}
 
-	resp = mock.NewTextFieldView("", "")
+	respTextField := mock.NewTextFieldView("", "")
 
-	if resp != "newTextField" {
+	if respTextField != "newTextField" {
 		t.Errorf("ViewBuilderMock NewTextFieldView failed")
 		return
 	}
