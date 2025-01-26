@@ -38,7 +38,7 @@ func (u *Utils) ValidateInput(v string) {
 
 func (u *Utils) HandleError(err error, message string) {
 	if err != nil {
-		msg := fmt.Sprintf(message+" -> ", err)
+		msg := fmt.Sprintf(message+" -> ", err.Error())
 		u.ExitWithError(msg)
 	}
 }

@@ -55,13 +55,12 @@ func (g *Git) IsGitRepository() bool {
 
 func (g *Git) execGitCommand(args ...string) (string, error) {
 	cmd := exec.Command("git", args...)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
 
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("ExecGitCommand -> %s: %v", strings.Join(args, " "), err)
+		return "", fmt.Errorf("%s", strings.TrimSpace(stdout.String()))
 	}
 
-	return strings.TrimSpace(out.String()), nil
+	return strings.TrimSpace(stdout.String()), nil
 }
