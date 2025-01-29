@@ -1,11 +1,22 @@
 package main
 
 import (
-	"kcommit/src"
+	"fmt"
 	"log"
+	"os"
+
+	"kcommit/src"
 )
 
 func main() {
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "--version", "-v":
+			fmt.Println(src.KcVersion)
+			return
+		}
+	}
+
 	fileManager, err := src.NewFileManager()
 	if err != nil {
 		log.Fatalln(err, "Failed to initialize FileManager")
