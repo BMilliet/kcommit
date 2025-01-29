@@ -5,6 +5,7 @@ Git commit generator using Karma commit message style.
 ## 📝 Documentation
 
 * [How it works](#how-it-works)
+* [Install](#install)
 * [Build from source](#build-it-from-source)
 * [Custom config](#kcommit-custom-configs)
 
@@ -26,7 +27,16 @@ First commit on a new branch:
 New commit on the same branch with scope already saved on cache:
 <img width="800" src="./docs/kcommit_2.gif" />
 
-## 📦 Build from source
+
+## 📦 Install
+To install it via homebrew (MacOS and Linux)
+
+```sh
+brew tap BMilliet/tap
+brew install bmilliet/tap/kcommit
+```
+
+## 🧰 Build from source
 
 Install go on your machine.
 Run:
