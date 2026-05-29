@@ -28,4 +28,4 @@ deploy:
 		git tag -a $$KC_VERSION -m "Release $$KC_VERSION"; \
 	fi; \
 	git push origin $$KC_VERSION; \
-	GITHUB_TOKEN=$$(gh auth token) goreleaser release
+	GITHUB_TOKEN=$$(gh auth token) goreleaser release --clean
