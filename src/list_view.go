@@ -48,6 +48,7 @@ func (m ListViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+c", "esc", "q":
 			*m.endValue = ListItem{T: ExitSignal}
+			m.quitting = true
 			return m, tea.Quit
 		}
 	}

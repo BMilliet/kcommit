@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
+
 	"kcommit/src"
 	testresources "kcommit/test_resources"
 )
@@ -149,6 +151,27 @@ func TestCleanOldBranchesYear(t *testing.T) {
 	assertBranchExists(t, history, "ProjectC", "Branch1", true)
 	assertBranchExists(t, history, "ProjectD", "Branch1", false)
 	assertBranchExists(t, history, "ProjectA", "Branch1", false)
+}
+
+func TestTextFieldViewModelClearsViewOnCancel(t *testing.T) {
+	for _, keyType := range []tea.KeyType{tea.KeyEsc, tea.KeyCtrlC} {
+		endValue := ""
+		model := src.TextFieldViewModel("Commit message", "", &endValue)
+
+		updatedModel, cmd := model.Update(tea.KeyMsg{Type: keyType})
+
+		if cmd == nil {
+			t.Errorf("expected quit command for key %v", keyType)
+		}
+
+		if endValue != src.ExitSignal {
+			t.Errorf("expected exit signal for key %v, got %q", keyType, endValue)
+		}
+
+		if view := updatedModel.View(); view != "" {
+			t.Errorf("expected empty view after cancel for key %v, got %q", keyType, view)
+		}
+	}
 }
 
 // --- Test mocks ---
