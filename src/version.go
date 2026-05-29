@@ -1,3 +1,3 @@
 package src
 
-const KcVersion = "0.1.6"
+const KcVersion = "0.1.7"
